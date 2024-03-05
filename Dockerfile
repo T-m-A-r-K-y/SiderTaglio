@@ -1,32 +1,18 @@
-FROM ubuntu:20.04
+# Uso di un'immagine base Python
+FROM python:3.9
 
-# Install git and related
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -yq \
-        curl \
-        git \
-        zip \
-        unzip \
-        pkg-config \
-        python3-dev \
-        python3-pip \
-        cmake \
-        libboost-dev \
-        libpolyclipping-dev \
-        libnlopt-cxx-dev
+# Impostazione della directory di lavoro
+WORKDIR /app
 
-# Install nest2D
-# Add a non-root user
-ARG USER="nest2d"
-ENV USER=${USER}
-ENV HOME /home/${USER}
-RUN adduser --shell /bin/sh --disabled-password --gecos "" ${USER} 
+# Copia dei file dei requisiti e installazione delle dipendenze
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-USER ${USER}
-WORKDIR ${HOME}
+# Copia del codice sorgente dell'applicazione nella directory di lavoro
+COPY . /app
 
-RUN git clone https://github.com/markfink/nest2D
-WORKDIR ${HOME}/nest2D
-RUN pip install nest2D
+# Esposizione della porta su cui l'applicazione Flask sarà in ascolto
+EXPOSE 5000
 
-ENTRYPOINT bash
+# Comando per avviare l'applicazione
+CMD ["python", "app.py"]
