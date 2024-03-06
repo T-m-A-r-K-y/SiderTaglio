@@ -28,43 +28,27 @@ jQuery(document).ready(function () {
         jQuery("#dropdownMenu").slideToggle(300);
     });
 
-    jQuery("#saveTokenBtn").click(async function () {
+    jQuery("#saveMachineBtn").click(async function () {
         // Get values from input fields
-        var newAddress = jQuery("#newAddress").val();
+        var newId = jQuery("#newId").val();
         var newName = jQuery("#newName").val();
-        var chainSelector = jQuery("#chain_selector").val();
-        var standardErcCheckbox = jQuery("#standardErcCheckbox").prop("checked");
+        var newOffset = jQuery("#newOffset").val();
+        var newSpessore = jQuery("#newSpessore").val();
         var nonce = jQuery("#_wpnonce").val();
 
-        
-
-        // Check if ABI file is uploaded
-        var abiFileContent = null;
-        if (!standardErcCheckbox) {
-            abiFileContent = jQuery("#abiUpload").val();
-        }
-
         // Check if all required fields are filled
-        if (!newAddress || !newName || !chainSelector) {
+        if (!newId || !newName || !newOffset || !newSpessore) {
             alert("Please fill in all required fields.");
-            return;
-        }
-
-        //Check if address is a valid address
-        var regex = /^0x[0-9a-fA-F]{40}$/;
-        if(!regex.test(newAddress)){
-            alert("The address you have entered is not a valid address.");
             return;
         }
 
         // Create an object to store the data
         var tokenData = {
-            action: 'save_custom_token',
-            address: newAddress,
+            action: 'save_macchina',
+            id: newId,
             name: newName,
-            chain: chainSelector,
-            erc20: standardErcCheckbox,
-            abifile: abiFileContent,
+            offset: newOffset,
+            spessore: newSpessore,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -73,12 +57,10 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        jQuery("#newAddress").val("");
-        jQuery("#newName").val("");
-        jQuery("#chain_selector").val("");
-        jQuery("#standardErcCheckbox").prop("checked", true);
-        jQuery("#abiUpload").val("");
-        jQuery(".secondDropDown").hide();
+        jQuery("#newId").val("");
+        Query("#newName").val("");
+        jQuery("#newOffset").val("");
+        jQuery("#newSpessore").val("");
         jQuery("#dropdownMenu").slideToggle(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -97,34 +79,121 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .saveButton").click(async function () {
+    jQuery("#saveMaterialBtn").click(async function () {
         // Get values from input fields
-        var address = jQuery(this).closest(".token-row").find(".address").val();
-        var name = jQuery(this).closest(".token-row").find(".name").val();
-        var chain = jQuery(this).closest(".token-row").find(".chain").val();
-        var standardErcCheckbox = jQuery(this).closest(".token-row").find(".erc20").prop("checked");
-        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
-
-        // Check if ABI file is uploaded
-        var abiFileContent = null;
-        if (!standardErcCheckbox) {
-            abiFileContent = jQuery(this).closest(".token-row").find(".abi").val();
-        }
+        var newId = jQuery("#newId").val();
+        var newPeso = jQuery("#newPeso").val();
+        var newPrezzo = jQuery("#newPrezzo").val();
+        var nonce = jQuery("#_wpnonce").val();
 
         // Check if all required fields are filled
-        if (!address || !name || !chain) {
+        if (!newId || !newPeso || !newPrezzo) {
             alert("Please fill in all required fields.");
             return;
         }
 
         // Create an object to store the data
         var tokenData = {
-            action: 'save_custom_token',
-            address: address,
-            name: name,
-            chain: chain,
-            erc20: standardErcCheckbox,
-            abifile: abiFileContent,
+            action: 'save_materiale',
+            id: newId,
+            peso_specifico: newPeso,
+            prezzo_kilo: newPrezzo,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        jQuery("#newId").val("");
+        jQuery("#newPeso").val("");
+        jQuery("#newPrezzo").val("");
+        jQuery("#dropdownMenu").slideToggle(300);
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery("#savePartnershipBtn").click(async function () {
+        // Get values from input fields
+        var newId = jQuery("#newId").val();
+        var newPercentuale = jQuery("#newPercentuale").val();
+        var nonce = jQuery("#_wpnonce").val();
+
+        // Check if all required fields are filled
+        if (!newId || !newPercentuale ) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_partnership_level',
+            id: newAddress,
+            name: newName,
+            percentage: chainSelector,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        jQuery("#newId").val("");
+        jQuery("#newPercentuale").val("");
+        jQuery("#dropdownMenu").slideToggle(300);
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .saveMachineButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var name = jQuery(this).closest(".token-row").find(".name").val();
+        var offset = jQuery(this).closest(".token-row").find(".offset").val();
+        var spessore = jQuery(this).closest(".token-row").find(".spessore").val();
+        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
+
+        // Check if all required fields are filled
+        if (!id || !name || !offset || !spessore) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_macchina',
+            id: newId,
+            name: newName,
+            offset: newOffset,
+            spessore: newSpessore,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -152,18 +221,187 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .deleteButton").click(async function () {
+    jQuery(".token-row .saveMaterialButton").click(async function () {
         // Get values from input fields
-        var address = jQuery(this).closest(".token-row").find(".address").val();
-        var chain = jQuery(this).closest(".token-row").find(".chain").val();
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var peso = jQuery(this).closest(".token-row").find(".peso").val();
+        var prezzo = jQuery(this).closest(".token-row").find(".prezzo").val();
+        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
+
+        // Check if all required fields are filled
+        if (!id || !peso || !prezzo) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_materiale',
+            id: newId,
+            peso_specifico: newPeso,
+            prezzo_kilo: newPrezzo,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300)
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .savePartnershipButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var percentuale = jQuery(this).closest(".token-row").find(".percentuale").val();
+        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
+
+        // Check if all required fields are filled
+        if (!id || !percentuale ) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_partnership_level',
+            id: newAddress,
+            name: newName,
+            percentage: chainSelector,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300)
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .deleteMachineButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
         var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
 
 
         // Create an object to store the data
         var tokenData = {
-            action: 'delete_custom_token',
-            address: address,
-            chain: chain,
+            action: 'delete_macchina',
+            id: id,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300);
+        var row = jQuery(this).closest(".token-row").find(".li-field-label");
+        row.toggleClass('active');
+        
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .deleteMaterialButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
+
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'delete_materiale',
+            id: id,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300);
+        var row = jQuery(this).closest(".token-row").find(".li-field-label");
+        row.toggleClass('active');
+        
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .deletePartnershipButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
+
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'delete_partnership_level',
+            id: id,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';

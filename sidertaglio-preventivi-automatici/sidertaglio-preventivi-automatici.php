@@ -165,12 +165,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_macchina' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='saveMachineButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_macchina' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deleteMachineButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -240,9 +240,9 @@ function sidertaglio_settings_form() {
 			<?php
 			if ( ! empty( $materiali ) ) {
 				foreach ( $materiali as $materiale ) {
-					$id   = $materiale['id'];
-					$data = $materiale['data'];
-					$peso = $data['peso_specifico'];
+					$id     = $materiale['id'];
+					$data   = $materiale['data'];
+					$peso   = $data['peso_specifico'];
 					$prezzo = $data['prezzo_kilo'];
 					?>
 						<div class="token-row">
@@ -281,12 +281,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_materiale' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='saveMaterialButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_materiale' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deleteMaterialButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -345,13 +345,13 @@ function sidertaglio_settings_form() {
 	?>
 		<div class="woocommerce_form_wrapper">
 			
-			<h3>Macchine da taglio</h3>
+			<h3>Livelli di partnership</h3>
 
 			<?php
 			if ( ! empty( $partnerships ) ) {
 				foreach ( $partnerships as $partnership ) {
-					$id       	 = $partnership['id'];
-					$data     	 = $partnership['data'];
+					$id          = $partnership['id'];
+					$data        = $partnership['data'];
 					$percentuale = $data['percentage'];
 					?>
 						<div class="token-row">
@@ -386,12 +386,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_partnership' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='savePartnershipButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_partnership' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deletePartnershipButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -455,12 +455,12 @@ function get_all_macchine() {
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_macchina_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
-			$data    = get_option( $option_name );
+			$data = get_option( $option_name );
 			array_push(
 				$saved_data,
 				array(
 					'id'   => $id,
-					'data'    => $data,
+					'data' => $data,
 				)
 			);
 		}
@@ -484,12 +484,12 @@ function get_all_materiali() {
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_materiale_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
-			$data    = get_option( $option_name );
+			$data = get_option( $option_name );
 			array_push(
 				$saved_data,
 				array(
 					'id'   => $id,
-					'data'    => $data,
+					'data' => $data,
 				)
 			);
 		}
@@ -513,12 +513,12 @@ function get_all_partnership_level() {
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_partnership_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
-			$data    = get_option( $option_name );
+			$data = get_option( $option_name );
 			array_push(
 				$saved_data,
 				array(
 					'id'   => $id,
-					'data'    => $data,
+					'data' => $data,
 				)
 			);
 		}
@@ -590,14 +590,14 @@ add_action( 'wp_ajax_nopriv_delete_partnership_level', 'delete_partnership_level
  * @since 1.0.0
  * @return void
  */
-function save_new_macchina() {
-	check_ajax_referer( 'save_new_macchina', 'security' );
+function save_macchina() {
+	check_ajax_referer( 'save_macchina', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['offset'] ) && isset( $_POST['spessore'] ) ) {
 		$id = 'sidertaglio_macchina_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
 		update_option(
 			$id,
 			array(
-				'name'    => sanitize_text_field( wp_unslash( $_POST['name'] ) ),
+				'name'     => sanitize_text_field( wp_unslash( $_POST['name'] ) ),
 				'offset'   => sanitize_text_field( wp_unslash( $_POST['offset'] ) ),
 				'spessore' => sanitize_text_field( wp_unslash( $_POST['spessore'] ) ),
 			)
@@ -606,8 +606,8 @@ function save_new_macchina() {
 	wp_die();
 }
 
-add_action( 'wp_ajax_save_save_new_macchina', 'save_new_macchina' );
-add_action( 'wp_ajax_nopriv_save_new_macchina', 'save_new_macchina' );
+add_action( 'wp_ajax_save_save_macchina', 'save_macchina' );
+add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
 
 /**
  * Stores a new material as option.
@@ -615,23 +615,23 @@ add_action( 'wp_ajax_nopriv_save_new_macchina', 'save_new_macchina' );
  * @since 1.0.0
  * @return void
  */
-function save_new_materiale() {
-	check_ajax_referer( 'save_new_materiale', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['peso_specifico'] ) ) {
+function save_materiale() {
+	check_ajax_referer( 'save_materiale', 'security' );
+	if ( isset( $_POST['id'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['prezzo_kilo'] ) ) {
 		$id = 'sidertaglio_materiale_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
 		update_option(
 			$id,
 			array(
 				'peso_specifico' => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
-				'prezzo_kilo' => sanitize_text_field( wp_unslash( $_POST['prezzo_kilo'] ) ),
+				'prezzo_kilo'    => sanitize_text_field( wp_unslash( $_POST['prezzo_kilo'] ) ),
 			)
 		);
 	}
 	wp_die();
 }
 
-add_action( 'wp_ajax_save_new_materiale', 'save_new_materiale' );
-add_action( 'wp_ajax_nopriv_save_new_materiale', 'save_new_materiale' );
+add_action( 'wp_ajax_save_materiale', 'save_materiale' );
+add_action( 'wp_ajax_nopriv_save_materiale', 'save_materiale' );
 
 /**
  * Stores a new partnership level as option.
@@ -639,35 +639,22 @@ add_action( 'wp_ajax_nopriv_save_new_materiale', 'save_new_materiale' );
  * @since 1.0.0
  * @return void
  */
-function save_new_partnership_level() {
-	check_ajax_referer( 'save_new_partnership_level', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['percentage'] )) {
+function save_partnership_level() {
+	check_ajax_referer( 'save_partnership_level', 'security' );
+	if ( isset( $_POST['id'] ) && isset( $_POST['percentage'] ) ) {
 		$id = 'sidertaglio_partnership_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
 		update_option(
 			$id,
 			array(
-				'precentage'    => sanitize_text_field( wp_unslash( $_POST['percentage'] ) ),
+				'precentage' => sanitize_text_field( wp_unslash( $_POST['percentage'] ) ),
 			)
 		);
 	}
 	wp_die();
 }
 
-add_action( 'wp_ajax_save_new_partnership_level', 'save_new_partnership_level' );
-add_action( 'wp_ajax_nopriv_save_new_partnership_level', 'save_new_partnership_level' );
-
-// /**
-//  * Register settings options.
-//  *
-//  * @since 1.0.0
-//  * @return void
-//  */
-// function sidertaglio_register_settings() {
-// 	add_option( 'sidertaglio_jwt_token', '' );
-// 	register_setting( 'sidertaglio_options_group', 'sidertaglio_jwt_token', 'sidertaglio_callback' );
-// }
-
-// add_action( 'admin_init', 'sidertaglio_register_settings' );
+add_action( 'wp_ajax_save_partnership_level', 'save_partnership_level' );
+add_action( 'wp_ajax_nopriv_save_partnership_level', 'save_partnership_level' );
 
 add_action( 'admin_menu', 'register_sidertaglio_preventivi_automatici_settings' );
 /**
