@@ -1,0 +1,282 @@
+[
+    {
+        "Lavorazione":"OSSIT",
+        "Descrizione":"OSSITAGLIO",
+        "Macchina":null,
+        " \u20ac\/h Macchina":181,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":181
+    },
+    {
+        "Lavorazione":"PLASMA",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"TRA",
+        "Descrizione":"TRAPANATURA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":68,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":68
+    },
+    {
+        "Lavorazione":"PLASMA5",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":184,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":184
+    },
+    {
+        "Lavorazione":"PLASMA6",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":184,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":184
+    },
+    {
+        "Lavorazione":"PLASMA7",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":184,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":184
+    },
+    {
+        "Lavorazione":"PLASMA8",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":184,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":184
+    },
+    {
+        "Lavorazione":"PLASMA10",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA12",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA13",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA14",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA15",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA16",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA18",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA20",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA21",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA22",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA23",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA24",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA25",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA28",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA30",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":221,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":221
+    },
+    {
+        "Lavorazione":"PLASMA32",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA33",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA35",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA36",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA37",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA38",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA40",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA42",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA43",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA45",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA47",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA48",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    },
+    {
+        "Lavorazione":"PLASMA50",
+        "Descrizione":"TAGLIO PLASMA",
+        "Macchina":null,
+        " \u20ac\/h Macchina":249,
+        " \u20ac\/h Operatore":0,
+        " \u20ac\/h Mach. + Op.":249
+    }
+]
