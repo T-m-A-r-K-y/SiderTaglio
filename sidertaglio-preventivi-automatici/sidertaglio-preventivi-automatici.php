@@ -17,10 +17,194 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once ABSPATH . 'wp-load.php';
-define( 'SPA_VERSION', '1.0' );
+define( 'SPA_VERSION', '1.2' );
 define( 'SPA_FILE', __FILE__ );
 define( 'SPA_PATH', plugin_dir_path( SPA_FILE ) );
 define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
+
+/**
+ * Shortcode per la generazione del form.
+ *
+ * @return string
+ */
+function form_preventivi_shortcode() {
+	ob_start();
+	wp_enqueue_script( 'jquery-tiptip' );
+	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici.css', array(), SPA_VERSION, null, 'all' );
+	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici.js', array( 'jquery' ), SPA_VERSION, true );
+	$materiali = get_all_materiali();
+	?>
+	<style>
+		#tiptip_holder {
+			display: none;
+			z-index: 8675309;
+			position: absolute;
+			top: 0;
+			pointer-events: none;
+			left: 0
+		}
+
+		#tiptip_holder.tip_top {
+			padding-bottom: 5px
+		}
+
+		#tiptip_holder.tip_top #tiptip_arrow_inner {
+			margin-top: -7px;
+			margin-left: -6px;
+			border-top-color: #333
+		}
+
+		#tiptip_holder.tip_bottom {
+			padding-top: 5px
+		}
+
+		#tiptip_holder.tip_bottom #tiptip_arrow_inner {
+			margin-top: -5px;
+			margin-left: -6px;
+			border-bottom-color: #333
+		}
+
+		#tiptip_holder.tip_right {
+			padding-left: 5px
+		}
+
+		#tiptip_holder.tip_right #tiptip_arrow_inner {
+			margin-top: -6px;
+			margin-left: -5px;
+			border-right-color: #333
+		}
+
+		#tiptip_holder.tip_left {
+			padding-right: 5px
+		}
+
+		#tiptip_holder.tip_left #tiptip_arrow_inner {
+			margin-top: -6px;
+			margin-left: -7px;
+			border-left-color: #333
+		}
+
+		#tiptip_content,.chart-tooltip,.wc_error_tip {
+			color: #fff;
+			font-size: .8em;
+			max-width: 150px;
+			background: #333;
+			text-align: center;
+			border-radius: 3px;
+			padding: .618em 1em;
+			box-shadow: 0 1px 3px rgba(0,0,0,.2)
+		}
+
+		#tiptip_content code,.chart-tooltip code,.wc_error_tip code {
+			padding: 1px;
+			background: #888
+		}
+
+		#tiptip_arrow,#tiptip_arrow_inner {
+			position: absolute;
+			border-color: transparent;
+			border-style: solid;
+			border-width: 6px;
+			height: 0;
+			width: 0
+		}
+
+		.campoDimensioni {
+			display: none;
+		}
+	</style>
+	<div class="woocommerce_form_wrapper">
+		<h3>Ricevi il tuo preventivo in tempo reale</h3>
+		<!-- Dropdown Menu -->
+		<ul class="dropdownMenu" id="dropdownMenu">
+
+			<!-- First DropDown -->
+			<li class="firstDropDown">
+				<?php $nonce = wp_create_nonce( 'generate_pdf' ); ?>
+				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<label for="forma">Scegli una forma tra le seguenti:</label>
+				<select name="forma" id="forma" onchange="aggiornaForm()">
+					<option value="">Seleziona una forma...</option>
+					<option value="quadrato">Quadrato</option>
+					<option value="rettangolare">Rettangolare</option>
+					<option value="cerchio">Cerchio</option>
+					<!--<option value="crescente">Crescente</option>-->
+				</select>
+				<br/>
+				
+				<div id="dimensioniQuadrato" class="campoDimensioni">
+					<label for="lato">Lato:</label>
+					<input type="number" id="lato" name="lato">
+				</div>
+				<br/>
+
+				<div id="dimensioniRettangolo" class="campoDimensioni">
+					<label for="larghezza">Larghezza:</label>
+					<input type="number" id="larghezza" name="larghezza">
+					<label for="altezza">Altezza:</label>
+					<input type="number" id="altezza" name="altezza">
+				</div>
+				<br/>
+
+				<div id="dimensioniCerchio" class="campoDimensioni">
+					<label for="raggio">Raggio:</label>
+					<input type="number" id="raggio" name="raggio">
+				</div>
+				<br/>
+
+				<!-- <div id="dimensioniCrescente" class="campoDimensioni">
+					<label for="raggioGrande">Raggio del cerchio grande (per la mezzaluna):</label>
+					<input type="number" id="raggioGrande" name="raggioGrande">
+
+					<label for="raggioPiccolo">Raggio del cerchio piccolo (per la mezzaluna):</label>
+					<input type="number" id="raggioPiccolo" name="raggioPiccolo">
+
+					<label for="posizionePiccolo">Posizione del cerchio piccolo (da 0 a 1):</label>
+					<input type="number" id="posizionePiccolo" name="posizionePiccolo" step="0.1" min="0" max="1">
+				</div>
+				<br/> -->
+
+				<label for="spessore">Spessore:</label>
+				<input type="number" id="spessore" name="spessore">
+				<br/>
+
+				<label for="materiale">Materiale:</label>
+				<select name="materiale" id="materiale">
+				<option value="">Seleziona un materiale</option>
+				<?php
+				if ( ! empty( $materiali ) ) {
+					foreach ( $materiali as $materiale ) {
+						$id     = $materiale['id'];
+						$data   = $materiale['data'];
+						$peso   = $data['peso_specifico'];
+						$prezzo = $data['prezzo_kilo'];
+						?>
+						<option value="<?php echo esc_html( $id ); ?>"><?php echo esc_html( $id ); ?></option>
+						<?php
+					}
+				}
+				?>
+				</select>
+				<br/>
+
+				<label for="quantità">Quantità:</label>
+				<input type="number" id="quantità" name="quantità">
+				<br/>
+			</li>
+
+			<!-- Save Button -->
+			<li class="saveButtonLi">
+				<button type="submit" id="generaPreventivo">
+				Genera Preventivo
+				</button>
+			</li>
+		</ul>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+add_shortcode( 'nome_shortcode', 'genera_form_shortcode' );
+
 
 /**
  * Renders the form for plugin settings.
@@ -185,7 +369,7 @@ function sidertaglio_settings_form() {
 			<br>
 			
 			<!-- Dropdown Menu -->
-			<ul style="display:none;" class="dropdownMenu" id="dropdownMenu">
+			<ul style="display:none;" class="dropdownMenu" id="dropdownNewMacchinaMenu">
 
 			<!-- First DropDown -->
 			<li class="firstDropDown">
@@ -301,7 +485,7 @@ function sidertaglio_settings_form() {
 			<br>
 			
 			<!-- Dropdown Menu -->
-			<ul style="display:none;" class="dropdownMenu" id="dropdownMenu">
+			<ul style="display:none;" class="dropdownMenu" id="dropdownNewMaterialeMenu">
 
 			<!-- First DropDown -->
 			<li class="firstDropDown">
@@ -406,7 +590,7 @@ function sidertaglio_settings_form() {
 			<br>
 			
 			<!-- Dropdown Menu -->
-			<ul style="display:none;" class="dropdownMenu" id="dropdownMenu">
+			<ul style="display:none;" class="dropdownMenu" id="dropdownNewPartnershipMenu">
 
 			<!-- First DropDown -->
 			<li class="firstDropDown">
@@ -451,7 +635,7 @@ function sidertaglio_settings_form() {
  */
 function get_all_macchine() {
 	$saved_data   = array();
-	$option_names = wp_load_alloption();
+	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_macchina_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
@@ -480,7 +664,7 @@ add_action( 'wp_ajax_nopriv_get_all_macchine', 'get_all_macchine' );
  */
 function get_all_materiali() {
 	$saved_data   = array();
-	$option_names = wp_load_alloption();
+	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_materiale_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
@@ -509,7 +693,7 @@ add_action( 'wp_ajax_nopriv_get_all_materiali', 'get_all_materiali' );
  */
 function get_all_partnership_level() {
 	$saved_data   = array();
-	$option_names = wp_load_alloption();
+	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_partnership_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
 			$id   = $matches[1];
@@ -666,7 +850,7 @@ add_action( 'admin_menu', 'register_sidertaglio_preventivi_automatici_settings' 
 function register_sidertaglio_preventivi_automatici_settings() {
 	add_menu_page( esc_html__( 'Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), esc_html__( 'Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), 'manage_options', 'sidertaglio-preventivi-automatici-settings', 'sidertaglio_settings_form', '', 900 );
 }
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'woocrypt_settings_link' );
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'sidertaglio_preventivi_automatici_settings_link' );
 
 /**
  * Generates link for menu and submenu plugin's settings page in Plugins admin page.
@@ -676,7 +860,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'woocrypt_sett
  * @param array $actions Actions.
  * @return array
  */
-function woocrypt_settings_link( $actions ) {
+function sidertaglio_preventivi_automatici_settings_link( $actions ) {
 	$actions[] = '<a href="' . admin_url( 'admin.php?page=sidertaglio-preventivi-automatici-settings' ) . '">Impostazioni</a>';
 	return $actions;
 }
