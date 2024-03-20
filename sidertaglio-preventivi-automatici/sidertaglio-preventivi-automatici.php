@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once ABSPATH . 'wp-load.php';
-define( 'SPA_VERSION', '1.2' );
+define( 'SPA_VERSION', '1.3' );
 define( 'SPA_FILE', __FILE__ );
 define( 'SPA_PATH', plugin_dir_path( SPA_FILE ) );
 define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
@@ -30,8 +30,8 @@ define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
 function form_preventivi_shortcode() {
 	ob_start();
 	wp_enqueue_script( 'jquery-tiptip' );
-	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici.css', array(), SPA_VERSION, null, 'all' );
-	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici.js', array( 'jquery' ), SPA_VERSION, true );
+	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici-user.css', array(), SPA_VERSION, null, 'all' );
+	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-user.js', array( 'jquery' ), SPA_VERSION, true );
 	$materiali = get_all_materiali();
 	?>
 	<style>
@@ -123,6 +123,7 @@ function form_preventivi_shortcode() {
 				<?php $nonce = wp_create_nonce( 'generate_pdf' ); ?>
 				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 				<label for="forma">Scegli una forma tra le seguenti:</label>
+				<br/>
 				<select name="forma" id="forma" onchange="aggiornaForm()">
 					<option value="">Seleziona una forma...</option>
 					<option value="quadrato">Quadrato</option>
@@ -135,22 +136,22 @@ function form_preventivi_shortcode() {
 				<div id="dimensioniQuadrato" class="campoDimensioni">
 					<label for="lato">Lato:</label>
 					<input type="number" id="lato" name="lato">
+					<br/>
 				</div>
-				<br/>
 
 				<div id="dimensioniRettangolo" class="campoDimensioni">
 					<label for="larghezza">Larghezza:</label>
 					<input type="number" id="larghezza" name="larghezza">
 					<label for="altezza">Altezza:</label>
 					<input type="number" id="altezza" name="altezza">
+					<br/>
 				</div>
-				<br/>
 
 				<div id="dimensioniCerchio" class="campoDimensioni">
 					<label for="raggio">Raggio:</label>
 					<input type="number" id="raggio" name="raggio">
+					<br/>
 				</div>
-				<br/>
 
 				<!-- <div id="dimensioniCrescente" class="campoDimensioni">
 					<label for="raggioGrande">Raggio del cerchio grande (per la mezzaluna):</label>
@@ -169,6 +170,7 @@ function form_preventivi_shortcode() {
 				<br/>
 
 				<label for="materiale">Materiale:</label>
+				<br/>
 				<select name="materiale" id="materiale">
 				<option value="">Seleziona un materiale</option>
 				<?php
@@ -203,7 +205,7 @@ function form_preventivi_shortcode() {
 	<?php
 	return ob_get_clean();
 }
-add_shortcode( 'nome_shortcode', 'genera_form_shortcode' );
+add_shortcode( 'sidertaglio_form_preventivi_shortcode', 'form_preventivi_shortcode' );
 
 
 /**
@@ -214,8 +216,8 @@ add_shortcode( 'nome_shortcode', 'genera_form_shortcode' );
  */
 function sidertaglio_settings_form() {
 	wp_enqueue_script( 'jquery-tiptip' );
-	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici.css', array(), SPA_VERSION, null, 'all' );
-	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici.js', array( 'jquery' ), SPA_VERSION, true );
+	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici-admin.css', array(), SPA_VERSION, null, 'all' );
+	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-admin.js', array( 'jquery' ), SPA_VERSION, true );
 	$macchine = get_all_macchine();
 	?>
 		<style>
@@ -304,8 +306,8 @@ function sidertaglio_settings_form() {
 					$id       = $macchina['id'];
 					$data     = $macchina['data'];
 					$name     = $data['name'];
-					$offset   = $data['name'];
-					$spessore = $data['name'];
+					$offset   = $data['offset'];
+					$spessore = $data['spessore'];
 					?>
 						<div class="token-row">
 							<div class="handle" id="<?php echo esc_attr( $id ); ?>">
@@ -374,11 +376,11 @@ function sidertaglio_settings_form() {
 			<!-- First DropDown -->
 			<li class="firstDropDown">
 				<?php $nonce = wp_create_nonce( 'save_macchina' ); ?>
-				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-				<label for="newId">ID macchina:
+				<input type="hidden" id="_wpMachinenonce" name="_wpMachinenonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<label for="newMachineId">ID macchina:
 					<?php echo wc_help_tip( 'Inserire un codice identificativo UNICO della macchina', false ); ?>
 				</label>
-				<input type="text" placeholder="e.g.: 0x123456789ABCDEF..." id="newId"/>
+				<input type="text" placeholder="e.g.: 0x123456789ABCDEF..." id="newMachineId"/>
 
 				<br/>
 				
@@ -413,7 +415,7 @@ function sidertaglio_settings_form() {
 				<input type="button" value="Crea Nuova Macchina" id="addMachineBtn">
 			</p>
 		</div>
-		
+		<br/>
 	<?php
 	$materiali = get_all_materiali();
 	?>
@@ -490,12 +492,17 @@ function sidertaglio_settings_form() {
 			<!-- First DropDown -->
 			<li class="firstDropDown">
 				<?php $nonce = wp_create_nonce( 'save_materiale' ); ?>
-				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-				<label for="newId">Codice materiale:
-					<?php echo wc_help_tip( 'Inserire un codice identificativo UNICO del materiale', false ); ?>
+				<input type="hidden" id="_wpMaterialnonce" name="_wpMaterialnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<label for="newMaterialId">Codice materiale:
+					<?php echo wc_help_tip( 'Inserire un codice identificativo del materiale', false ); ?>
 				</label>
-				<input type="text" placeholder="e.g.: A1B2C3..." id="newId"/>
+				<input type="text" placeholder="e.g.: A1B2C3..." id="newMaterialId"/>
 
+				<br/>
+
+				<label for="newSpessoreMateriale">Spessore del materiale:</label>
+				<input type="number" placeholder="e.g.: 6" id="newSpessoreMateriale"/>
+				
 				<br/>
 
 				<label for="newPeso">Peso specifico in kg/m<sup>3</sup>:</label>
@@ -524,6 +531,7 @@ function sidertaglio_settings_form() {
 				<input type="button" value="Crea Nuovo Materiale" id="addMaterialBtn">
 			</p>
 		</div>
+		<br/>
 	<?php
 	$partnerships = get_all_partnership_level();
 	?>
@@ -567,12 +575,12 @@ function sidertaglio_settings_form() {
 
 								<!-- Save Button -->
 								<li class="saveButtonLi">
-									<?php $nonce = wp_create_nonce( 'save_partnership' ); ?>
+									<?php $nonce = wp_create_nonce( 'save_partnership_level' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
 										<input class='savePartnershipButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
-									<?php $nonce = wp_create_nonce( 'delete_partnership' ); ?>
+									<?php $nonce = wp_create_nonce( 'delete_partnership_level' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
 										<input class='deletePartnershipButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
@@ -594,12 +602,12 @@ function sidertaglio_settings_form() {
 
 			<!-- First DropDown -->
 			<li class="firstDropDown">
-				<?php $nonce = wp_create_nonce( 'save_partnership' ); ?>
-				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-				<label for="newId">Livello di partnership:
+				<?php $nonce = wp_create_nonce( 'save_partnership_level' ); ?>
+				<input type="hidden" id="_wpPartnershipnonce" name="_wpPartnershipnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+				<label for="newPartnershipId">Livello di partnership:
 					<?php echo wc_help_tip( 'Inserire un nomw identificativo UNICO del livello di partnership', false ); ?>
 				</label>
-				<input type="text" placeholder="e.g.: NORMAL" id="newId"/>
+				<input type="text" placeholder="e.g.: NORMAL" id="newPartnershipId"/>
 
 				<br/>
 
@@ -624,6 +632,7 @@ function sidertaglio_settings_form() {
 				<input type="button" value="Crea Nuovo Livello Partnership" id="addPartnershipBtn">
 			</p>
 		</div>
+		<br/>
 	<?php
 }
 
@@ -637,7 +646,7 @@ function get_all_macchine() {
 	$saved_data   = array();
 	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
-		if ( preg_match( '/^sidertaglio_macchina_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
+		if ( preg_match( '/^sidertaglio_macchina_(.*)/', $option_name, $matches ) ) {
 			$id   = $matches[1];
 			$data = get_option( $option_name );
 			array_push(
@@ -666,7 +675,7 @@ function get_all_materiali() {
 	$saved_data   = array();
 	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
-		if ( preg_match( '/^sidertaglio_materiale_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
+		if ( preg_match( '/^sidertaglio_materiale_(.*)/', $option_name, $matches ) ) {
 			$id   = $matches[1];
 			$data = get_option( $option_name );
 			array_push(
@@ -695,7 +704,7 @@ function get_all_partnership_level() {
 	$saved_data   = array();
 	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
-		if ( preg_match( '/^sidertaglio_partnership_(0x[0-9a-fA-F]+)$/', $option_name, $matches ) ) {
+		if ( preg_match( '/^sidertaglio_partnership_(.*)/', $option_name, $matches ) ) {
 			$id   = $matches[1];
 			$data = get_option( $option_name );
 			array_push(
@@ -790,7 +799,7 @@ function save_macchina() {
 	wp_die();
 }
 
-add_action( 'wp_ajax_save_save_macchina', 'save_macchina' );
+add_action( 'wp_ajax_save_macchina', 'save_macchina' );
 add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
 
 /**
@@ -830,7 +839,7 @@ function save_partnership_level() {
 		update_option(
 			$id,
 			array(
-				'precentage' => sanitize_text_field( wp_unslash( $_POST['percentage'] ) ),
+				'percentage' => sanitize_text_field( wp_unslash( $_POST['percentage'] ) ),
 			)
 		);
 	}

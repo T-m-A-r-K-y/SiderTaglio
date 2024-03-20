@@ -1,0 +1,340 @@
+/* Custom Style For Main Wrapper Div*/
+.woocommerce_form_wrapper {
+	max-width: 50%;
+	margin: auto;
+	padding: 20px;
+	background: #fff;
+	border-radius: 5px;
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+.woocommerce-help-tip::after {
+	font-family: Dashicons;
+	font-weight: 400;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	margin: 0;
+	text-indent: 0;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	content: "\f223";
+	cursor: help;
+}
+
+.woocommerce-help-tip {
+	color: #666;
+	display: inline-block;
+	font-size: 1.2em;
+	font-style: normal;
+	height: 16px;
+	line-height: 1;
+	position: relative;
+	vertical-align: middle;
+	width: 16px;
+	margin: 0 -24px 0 0;
+	right: 0;
+	top: 0;
+}
+
+/* Header Section Styling */
+h3 {
+	font-size: 24px;
+	color: #3c3c3c;
+	margin-bottom: 20px;
+}
+
+/* Buttons Styling */
+#addMachineBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.7rem 2rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+
+	overflow: visible;
+}
+
+#addMachineBtn:hover {
+	background:#135e96;
+}
+#saveMachineBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.5rem 1.5rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+	overflow: visible;
+}
+
+#saveMachineBtn:hover {
+	background:#135e96;
+}
+
+
+#addMaterialBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.7rem 2rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+
+	overflow: visible;
+}
+
+#addMaterialBtn:hover {
+	background:#135e96;
+}
+#saveMaterialBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.5rem 1.5rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+	overflow: visible;
+}
+
+#saveMaterialBtn:hover {
+	background:#135e96;
+}
+
+
+#addPartnershipBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.7rem 2rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+
+	overflow: visible;
+}
+
+#addPartnershipBtn:hover {
+	background:#135e96;
+}
+#savePartnershipBtn {
+	background:#2271b1;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding:.5rem 1.5rem;
+	border-radius:.25rem;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+	position:relative;
+	z-index:0;
+	overflow: visible;
+}
+
+#savePartnershipBtn:hover {
+	background:#135e96;
+}
+
+/* Dropdown Styling */
+.dropdownMenu li select {
+	border-color: lightgray;
+}
+.dropdownMenu {
+	list-style: none;
+	position: relative;
+	z-index: 9999;
+	box-sizing: border-box;
+}
+.dropdownMenu li input {
+	width: 100%;
+	margin-bottom: 10px;
+	outline: none;
+	padding: 10px;
+	border: 1px solid lightgray;
+	border-radius: 5px;
+}
+
+.dropdownMenu li {
+	padding: 10px;
+	cursor:pointer;
+	transition: linear 0.2s;
+}
+
+.dropdownMenu li + li {
+	margin-top: 10px;
+}
+.closeIcon {
+	float: right;
+	font-size: x-large;
+	font-weight: bold;
+	line-height: 1.5em;
+	color: red;
+	cursor: pointer;
+}
+
+/* Additional Classes Used By JavaScript */
+.hiddenClass {display:none!important;}
+.errorMsg {color:red; font-size:smaller;}
+.closed-token{
+	line-height: 1.4;
+	font-size: 13px;
+	list-style: none;
+	position: relative;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	align-items: stretch;
+	vertical-align: middle;
+}
+
+.closed-token::before, .closed-token::after {
+	content: "";
+	display: block;
+	line-height: 0;
+}
+
+.closed-token::after {
+	clear: both;
+}
+
+.handle{
+	line-height: 1.4;
+	outline: 0;
+}
+
+.li-field-label{
+	box-sizing: border-box;
+	/* padding-top: 14px; */
+	font-size: 20px;
+	line-height: 3.0em;
+	padding-left: 40px;
+	min-height: 30px;
+	width: calc(50% - 64px);
+	cursor: pointer;
+	transition: transform 0.3s ease-in-out;
+	-webkit-transition: transform 0.3s ease-in-out;
+}
+.li-field-label::before{
+	content: "";
+	display: inline-flex;
+	vertical-align: middle;
+	left: 6px;
+	width: 20px;
+	height: 20px;
+	background-color: #667085;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	overflow: hidden;
+	-webkit-mask-image: url(../images/icon-chevron-down.svg);
+	mask-image: url(../images/icon-chevron-down.svg);
+}
+.li-field-label.active::before {
+	transform: rotate(180deg);
+}
+
+.token-row{
+	line-height: 1.4;
+	font-size: 13px;
+	outline: 0;
+	background: #fff;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #EAECF0;
+}
+
+.settings {
+	display: none;
+	box-sizing: border-box;
+	padding-top: 0;
+	padding-bottom: 0;
+	background-color: #fff;
+	border-left-width: 4px;
+	border-left-style: solid;
+	border-left-color: #2271b1;
+}
+
+.li-field-name{
+	box-sizing: border-box;
+	line-height: 4.7em;
+	word-wrap: break-word;
+	display: flex;
+	flex-wrap: wrap;
+	min-height: 60px;
+	align-items: flex-start;
+}
+
+.saveButtonLi{
+	box-sizing: border-box;
+	display: flex;
+	justify-content: space-between;
+}
+
+.button-right{
+	text-align: right;
+	margin: 0;
+}
+
+.button-left{
+	text-align: left;
+	margin: 0;
+}
+
+.saveButton {
+	background:#2271b1;
+	border: none!important;
+	color: white;
+	cursor: pointer;
+	padding:.5rem 1.5rem!important;
+	border-radius:.25rem!important;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+}
+
+.deleteButton {
+	background:#b01722;
+	border: none!important;
+	color: white;
+	cursor: pointer;
+	padding:.5rem 1.5rem!important;
+	border-radius:.25rem!important;
+	-webkit-transition:all ease-in-out.2s;
+	transition:all ease-in-out.2s;
+}
+
+.saveButton:hover {
+	background:#135e96;
+}
+
+.deleteButton:hover {
+	background:#6f0202;
+}
