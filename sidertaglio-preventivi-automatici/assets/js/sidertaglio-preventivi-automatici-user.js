@@ -22,21 +22,21 @@ jQuery(document).ready(function () {
     jQuery("#generaPreventivo").click(async function () {
         // Get values from input fields
         var forma = jQuery("#forma").val();
-        let svg;
+        let svg,p_reale;
         var materiale = jQuery("#materiale").val();
         var spessore = jQuery("#spessore").val();
-        let dimX, dimY, macchina, um;
+        let dimX, dimY, um;
         var quantita = jQuery("#quantità").val();
-        let p_reale,p_quadrotto,p_esterno,p_rottame,p_quadrotto_plus_10;
 
         // var newPercentuale = jQuery("#newPercentuale").val();
-        // var nonce = jQuery("#_wpnonce").val();
+        var nonce = jQuery("#_wpnonce").val();
 
         switch(forma) {
             case 'quadrato':
                 const lato = jQuery("#dimensioniQuadrato #lato").val();
                 dimX = lato;
                 dimY = lato;
+                p_reale = dimX * dimY * spessore;
                 svg = creaQuadratoSVG(lato);
                 break;
             case 'rettangolare':
@@ -44,12 +44,14 @@ jQuery(document).ready(function () {
                 const altezza = jQuery("#dimensioniRettangolo #altezza").val();
                 dimX = larghezza;
                 dimY = altezza;
+                p_reale = dimX * dimY * spessore;
                 svg = creaRettangoloSVG(larghezza, altezza);
                 break;
             case 'cerchio':
                 const raggio = jQuery("#dimensioniCerchio #raggio").val();
                 dimX = 2*raggio;
                 dimY = 2*raggio;
+                p_reale = raggio * raggio * 3.14 * spessore;
                 svg = creaCerchioSVG(raggio);
                 break;
             case 'crescente':
@@ -70,10 +72,13 @@ jQuery(document).ready(function () {
         }
         // Create an object to store the data
         var tokenData = {
-            action: 'save_partnership_level',
-            id: newAddress,
-            name: newName,
-            percentage: chainSelector,
+            action: 'genera_preventivo',
+            materiale: materiale,
+            spessore: spessore,
+            dimX: dimX,
+            dimY: dimY,
+            quantita: quantita,
+            p_reale: p_reale,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -82,9 +87,10 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        jQuery("#newId").val("");
-        jQuery("#newPercentuale").val("");
-        jQuery("#dropdownMenu").slideToggle(300);
+        jQuery("#forma").val("");
+        jQuery("#materiale").val("");
+        jQuery("#spessore").val("");
+        jQuery("#quantità").val("");
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
@@ -98,8 +104,6 @@ jQuery(document).ready(function () {
                 console.error(error);
             }
         });
-        location.reload()
-
     });
 });
 

@@ -849,6 +849,68 @@ function save_partnership_level() {
 add_action( 'wp_ajax_save_partnership_level', 'save_partnership_level' );
 add_action( 'wp_ajax_nopriv_save_partnership_level', 'save_partnership_level' );
 
+
+function initialize_materials_array($id) {
+    $array_id = 'sidertaglio_materiale_' . $id;
+    update_option($array_id, array());
+}
+
+function add_or_edit_material($id, $material_id, $peso_specifico, $prezzo_kilo) {
+    $array_id = 'sidertaglio_materiale_' . $id;
+    $materials = get_option($array_id, array());
+    $materials[$material_id] = array(
+        'peso_specifico' => $peso_specifico,
+        'prezzo_kilo'    => $prezzo_kilo
+    );
+    update_option($array_id, $materials);
+}
+
+function delete_material($id, $material_id) {
+    $array_id = 'sidertaglio_materiale_' . $id;
+    $materials = get_option($array_id, array());
+    unset($materials[$material_id]);
+    update_option($array_id, $materials);
+}
+
+function get_materials($id) {
+    $array_id = 'sidertaglio_materiale_' . $id;
+    return get_option($array_id, array());
+}
+
+function delete_materials_array($id) {
+    $array_id = 'sidertaglio_materiale_' . $id;
+    delete_option($array_id);
+}
+
+/**
+ * Returns all the machines created by user.
+ *
+ * @since 1.0.0
+ * @return array
+ */
+function genera_preventivo() {
+	check_ajax_referer( 'genera_preventivo', 'security' );
+	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dimX'] ) && isset( $_POST['dimY'] ) && isset( $_POST['quantita'] ) && isset( $_POST['p_reale'] ) ) {
+		$p_esterno;
+		$materiale = $_POST['materiale'];       
+		$spessore = $_POST['spessore'];         
+		$dimX = $_POST['dimX'];                 
+		$dimY = $_POST['dimY'];                 
+		$quantita = $_POST['quantita'];
+		$p_reale = $_POST['p_reale'];
+
+		$p_quadrotto = ($dimX * $dimY * $spessore / 1e6) * 8;
+		$p_rottame = $p_quadrotto - ($p_reale + $p_reale / 100 * $_POST['e9']);
+		$p_quadrotto_plus_10 = (($dimX + 10) * ($dimY + 10) * $spessore / 1e6) * 8;	 
+
+	}
+
+}
+
+add_action( 'wp_ajax_get_all_macchine', 'get_all_macchine' );
+add_action( 'wp_ajax_nopriv_get_all_macchine', 'get_all_macchine' );
+
+
 add_action( 'admin_menu', 'register_sidertaglio_preventivi_automatici_settings' );
 /**
  * Adds menu and submenu for plugin settings.
