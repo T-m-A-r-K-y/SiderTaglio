@@ -33,6 +33,7 @@ function form_preventivi_shortcode() {
 	wp_enqueue_style( 'spa_custom_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici-user.css', array(), SPA_VERSION, null, 'all' );
 	wp_enqueue_script( 'spa_custom_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-user.js', array( 'jquery' ), SPA_VERSION, true );
 	$materiali = get_all_materiali();
+	$macchine = get_all_macchine();
 	?>
 	<style>
 		#tiptip_holder {
@@ -113,6 +114,9 @@ function form_preventivi_shortcode() {
 			display: none;
 		}
 	</style>
+	<script type="text/javascript">
+		var macchine = <?php echo json_encode($macchine); ?>;
+	</script>
 	<div class="woocommerce_form_wrapper">
 		<h3>Ricevi il tuo preventivo in tempo reale</h3>
 		<!-- Dropdown Menu -->
@@ -892,6 +896,7 @@ function genera_preventivo() {
 	check_ajax_referer( 'genera_preventivo', 'security' );
 	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dimX'] ) && isset( $_POST['dimY'] ) && isset( $_POST['quantita'] ) && isset( $_POST['p_reale'] ) ) {
 		$p_esterno;
+		$macchina_scelta;
 		$materiale = $_POST['materiale'];       
 		$spessore = $_POST['spessore'];         
 		$dimX = $_POST['dimX'];                 
@@ -899,8 +904,15 @@ function genera_preventivo() {
 		$quantita = $_POST['quantita'];
 		$p_reale = $_POST['p_reale'];
 
+		
+
+		$id       = $macchina_scelta['id'];
+		$data     = $macchina_scelta['data'];
+		$name     = $data['name'];
+		$offset   = $data['offset'];
+
 		$p_quadrotto = ($dimX * $dimY * $spessore / 1e6) * 8;
-		$p_rottame = $p_quadrotto - ($p_reale + $p_reale / 100 * $_POST['e9']);
+		$p_rottame = $p_quadrotto - ($p_reale + $p_reale / 100 * $offset);
 		$p_quadrotto_plus_10 = (($dimX + 10) * ($dimY + 10) * $spessore / 1e6) * 8;	 
 
 	}
