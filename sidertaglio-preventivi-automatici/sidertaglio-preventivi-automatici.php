@@ -894,29 +894,29 @@ function delete_materials_array($id) {
  */
 function genera_preventivo() {
 	check_ajax_referer( 'genera_preventivo', 'security' );
-	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dimX'] ) && isset( $_POST['dimY'] ) && isset( $_POST['quantita'] ) && isset( $_POST['p_reale'] ) ) {
+	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dim_x'] ) && isset( $_POST['dim_y'] ) && isset( $_POST['quantita'] ) && isset( $_POST['p_reale'] ) && isset( $_POST['macchina_scelta'] ) ) {
 		$p_esterno;
-		$macchina_scelta;
-		$materiale = $_POST['materiale'];       
-		$spessore = $_POST['spessore'];         
-		$dimX = $_POST['dimX'];                 
-		$dimY = $_POST['dimY'];                 
-		$quantita = $_POST['quantita'];
-		$p_reale = $_POST['p_reale'];
+		$macchina_scelta = sanitize_text_field( wp_unslash( $_POST['macchina_scelta'] ) );
+		$materiale       = sanitize_text_field( wp_unslash( $_POST['materiale'] ) );
+		$spessore        = sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$dim_x           = sanitize_text_field( wp_unslash( $_POST['dim_x'] ) );
+		$dim_y           = sanitize_text_field( wp_unslash( $_POST['dim_y'] ) );
+		$quantita        = sanitize_text_field( wp_unslash( $_POST['quantita'] ) );
+		$p_reale         = sanitize_text_field( wp_unslash( $_POST['p_reale'] ) );
+		$id              = $macchina_scelta['id'];
+		$data            = $macchina_scelta['data'];
+		$name            = $data['name'];
+		$offset          = $data['offset'];
 
+		$user_id             = get_current_user_id();
+		$partnership_level   = get_user_meta( $user_id, 'partnership_level', true );
+		$partnership_id      = 'sidertaglio_materiale_' . $partnership_level;
+		$partnership_details = get_option( $partnership_id );
 		
-
-		$id       = $macchina_scelta['id'];
-		$data     = $macchina_scelta['data'];
-		$name     = $data['name'];
-		$offset   = $data['offset'];
-
-		$p_quadrotto = ($dimX * $dimY * $spessore / 1e6) * 8;
-		$p_rottame = $p_quadrotto - ($p_reale + $p_reale / 100 * $offset);
-		$p_quadrotto_plus_10 = (($dimX + 10) * ($dimY + 10) * $spessore / 1e6) * 8;	 
-
+		$p_quadrotto         = ( $dim_x * $dim_y * $spessore / 1e6 ) * 8;
+		$p_rottame           = $p_quadrotto - ( $p_reale + $p_reale / 100 * $offset );
+		$p_quadrotto_plus_10 = ( ( $dim_x + 10 ) * ( $dim_y + 10 ) * $spessore / 1e6) * 8;
 	}
-
 }
 
 add_action( 'wp_ajax_get_all_macchine', 'get_all_macchine' );
