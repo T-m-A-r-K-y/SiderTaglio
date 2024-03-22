@@ -19,13 +19,25 @@ jQuery(document).ready(function () {
         }
     });
 
+    jQuery('#materiale').change(function() {
+        var selectedMaterial = jQuery('#materiale').val();
+        var spessoreDropdown = jQuery('#spessore');
+        spessoreDropdown.prop('disabled', false);
+
+        // Hide all options and then show only the relevant ones
+        jQuery('#spessore option').hide().filter('.' + selectedMaterial).show();
+
+        // Reset the spessore value
+        spessoreDropdown.val('');
+    });
+
     jQuery("#generaPreventivo").click(async function () {
         // Get values from input fields
         var forma = jQuery("#forma").val();
         let svg,p_reale;
         var materiale = jQuery("#materiale").val();
         var spessore = jQuery("#spessore").val();
-        let dimX, dimY, um;
+        let dimX, dimY, um, superfice, perimetro;
         var quantita = jQuery("#quantità").val();
 
         // var newPercentuale = jQuery("#newPercentuale").val();
@@ -33,40 +45,51 @@ jQuery(document).ready(function () {
 
         switch(forma) {
             case 'quadrato':
-                const lato = jQuery("#dimensioniQuadrato #lato").val();
+                const lato = parseFloat(jQuery("#dimensioniQuadrato #lato").val());
                 dimX = lato;
                 dimY = lato;
-                p_reale = dimX * dimY * spessore;
+                perimetro = lato * 4;
+                superficie = lato * lato; // Area of a square = side^2
                 svg = creaQuadratoSVG(lato);
                 break;
             case 'rettangolare':
-                const larghezza = jQuery("#dimensioniRettangolo #larghezza").val();
-                const altezza = jQuery("#dimensioniRettangolo #altezza").val();
+                const larghezza = parseFloat(jQuery("#dimensioniRettangolo #larghezza").val());
+                const altezza = parseFloat(jQuery("#dimensioniRettangolo #altezza").val());
                 dimX = larghezza;
                 dimY = altezza;
-                p_reale = dimX * dimY * spessore;
+                perimetro = altezza * 2 + larghezza * 2;
+                superficie = larghezza * altezza; // Area of a rectangle = width * height
                 svg = creaRettangoloSVG(larghezza, altezza);
                 break;
             case 'cerchio':
-                const raggio = jQuery("#dimensioniCerchio #raggio").val();
-                dimX = 2*raggio;
-                dimY = 2*raggio;
-                p_reale = raggio * raggio * 3.14 * spessore;
+                const raggio = parseFloat(jQuery("#dimensioniCerchio #raggio").val());
+                dimX = 2 * raggio;
+                dimY = 2 * raggio;
+                perimetro = raggio * Math.PI * 2;
+                superficie = Math.PI * raggio * raggio; // Area of a circle = π * radius^2
                 svg = creaCerchioSVG(raggio);
                 break;
             case 'crescente':
-                const raggioGrande = jQuery("#dimensioniCrescente #raggioGrande").val();
-                const raggioPiccolo = jQuery("#dimensioniCrescente #raggioPiccolo").val();
-                const posizionePiccolo = jQuery("#dimensioniCrescente #posizionePiccolo").val();
+                const raggioGrande = parseFloat(jQuery("#dimensioniCrescente #raggioGrande").val());
+                const raggioPiccolo = parseFloat(jQuery("#dimensioniCrescente #raggioPiccolo").val());
+                const posizionePiccolo = parseFloat(jQuery("#dimensioniCrescente #posizionePiccolo").val());
+                // Calculate the area of a crescent shape
+                // Area = π * (R^2 - r^2), where R = raggioGrande, r = raggioPiccolo
+                superficie = Math.PI * (raggioGrande * raggioGrande - raggioPiccolo * raggioPiccolo);
                 svg = creaMezzalunaSVG(raggioGrande, raggioPiccolo, posizionePiccolo);
                 break;
             default:
                 console.log('Forma non riconosciuta');
+                superficie = 0;
+                break;
         }
+        
+        // Assuming spessore is defined elsewhere
+        p_reale = superficie * spessore;        
 
 
         // Check if all required fields are filled
-        if (!newId || !newPercentuale ) {
+        if (!forma || !materiale || !spessore || !quantita ) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -77,8 +100,10 @@ jQuery(document).ready(function () {
             spessore: spessore,
             dimX: dimX,
             dimY: dimY,
+            perimetro: perimetro,
             quantita: quantita,
             p_reale: p_reale,
+            superfice: superfice,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';

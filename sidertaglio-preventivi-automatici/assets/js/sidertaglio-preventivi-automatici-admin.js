@@ -16,6 +16,15 @@ jQuery(document).ready(function () {
         jQuery(this).toggleClass("active");
     });
 
+    jQuery(".parent-token-row .li-field-label").click(function () {
+        // Find the corresponding settings div for the clicked label
+        var children = jQuery(this).closest(".parent-token-row").find(".child-list");
+
+        // Toggle the display of the settings
+        settings.slideToggle(300);
+        jQuery(this).toggleClass("active");
+    });
+
     jQuery("#addMachineBtn").click(function (){
         jQuery("#dropdownNewMacchinaMenu").slideToggle(300);
     });
@@ -83,14 +92,14 @@ jQuery(document).ready(function () {
     jQuery("#saveMaterialBtn").click(async function () {
         // Get values from input fields
         var newId = jQuery("#newMaterialId").val();
-        let fullId;
         var newSpessoreMateriale = jQuery("#newSpessoreMateriale").val();
         var newPeso = jQuery("#newPeso").val();
         var newPrezzo = jQuery("#newPrezzo").val();
+        var newRicarico = jQuery("#newRicarico").val();
         var nonce = jQuery("#_wpMaterialnonce").val();
 
         // Check if all required fields are filled
-        if (!newId || !newPeso || !newPrezzo || !newSpessoreMateriale) {
+        if (!newId || !newPeso || !newPrezzo || !newSpessoreMateriale || !newRicarico) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -99,9 +108,11 @@ jQuery(document).ready(function () {
         // Create an object to store the data
         var tokenData = {
             action: 'save_materiale',
-            id: fullId,
+            id: newId,
+            spessore: newSpessoreMateriale,
             peso_specifico: newPeso,
             prezzo_kilo: newPrezzo,
+            ricarico_materiale: newRicarico,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -113,6 +124,7 @@ jQuery(document).ready(function () {
         jQuery("#newMaterialId").val("");
         jQuery("#newPeso").val("");
         jQuery("#newPrezzo").val("");
+        jQuery("#newRicarico").val("");
         jQuery("#dropdownNewMaterialeMenu").slideToggle(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -135,10 +147,11 @@ jQuery(document).ready(function () {
         // Get values from input fields
         var newId = jQuery("#newPartnershipId").val();
         var newPercentuale = jQuery("#newPercentuale").val();
+        var newRottame = jQuery("#newRottame").val();
         var nonce = jQuery("#_wpPartnershipnonce").val();
 
         // Check if all required fields are filled
-        if (!newId || !newPercentuale ) {
+        if (!newId || !newPercentuale || !newRottame) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -148,6 +161,7 @@ jQuery(document).ready(function () {
             action: 'save_partnership_level',
             id: newId,
             percentage: newPercentuale,
+            rottame: newRottame,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -158,6 +172,7 @@ jQuery(document).ready(function () {
         // Clear the input fields and hide the second dropdown
         jQuery("#newPartnershipId").val("");
         jQuery("#newPercentuale").val("");
+        jQuery("#newRottame").val("");
         jQuery("#dropdownNewPartnershipMenu").slideToggle(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -225,59 +240,57 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".token-row .saveMaterialButton").click(async function () {
-        // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
-        var peso = jQuery(this).closest(".token-row").find(".peso").val();
-        var prezzo = jQuery(this).closest(".token-row").find(".prezzo").val();
-        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
-
-        // Check if all required fields are filled
-        if (!id || !peso || !prezzo) {
+        var tokenRow = jQuery(this).closest(".token-row");
+        var id = tokenRow.attr("id"); // Assuming the parent ID is stored in the 'id' attribute
+        var spessore = tokenRow.find(".spessore").val(); // Retrieve the 'spessore' value
+        var peso = tokenRow.find(".peso").val();
+        var prezzo = tokenRow.find(".prezzo").val();
+        var ricarico = tokenRow.find(".ricarico").val();
+        var nonce = tokenRow.find(".saveNonce").val();
+    
+        if (!id || !spessore || !peso || !prezzo) {
             alert("Please fill in all required fields.");
             return;
         }
-
-        // Create an object to store the data
+    
         var tokenData = {
             action: 'save_materiale',
             id: id,
+            spessore: spessore,
             peso_specifico: peso,
             prezzo_kilo: prezzo,
+            ricarico_materiale: ricarico,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
-
-        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+    
         console.log("Token Data:", tokenData);
-
-        // Clear the input fields and hide the second dropdown
-        var settings = jQuery(this).closest(".token-row").find(".settings");
-        settings.slideToggle(300)
+    
+        var settings = tokenRow.find(".settings");
+        settings.slideToggle(300);
         await jQuery.ajax({
-            url: ajaxurl, // WordPress AJAX endpoint
+            url: ajaxurl,
             type: 'POST',
             data: tokenData,
             success: function(response) {
-                // Handle the success response here
                 console.log(response);
             },
             error: function(error) {
-                // Handle the error here
                 console.error(error);
             }
         });
-        location.reload()
-
+        location.reload();
     });
 
     jQuery(".token-row .savePartnershipButton").click(async function () {
         // Get values from input fields
         var id = jQuery(this).closest(".token-row").find(".id").val();
         var percentuale = jQuery(this).closest(".token-row").find(".percentuale").val();
+        var rottame = jQuery(this).closest(".token-row").find(".rottame").val();
         var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
 
         // Check if all required fields are filled
-        if (!id || !percentuale ) {
+        if (!id || !percentuale || !rottame) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -287,6 +300,7 @@ jQuery(document).ready(function () {
             action: 'save_partnership_level',
             id: id,
             percentage: percentuale,
+            rottame: rottame,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
