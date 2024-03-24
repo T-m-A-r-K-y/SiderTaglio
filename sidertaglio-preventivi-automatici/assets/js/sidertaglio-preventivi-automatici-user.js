@@ -39,7 +39,8 @@ jQuery(document).ready(function () {
         var spessore = jQuery("#spessore").val();
         let dimX, dimY, um, superfice, perimetro;
         var quantita = jQuery("#quantità").val();
-
+        var lavorazioniSelected = {};
+        
         // var newPercentuale = jQuery("#newPercentuale").val();
         var nonce = jQuery("#_wpnonce").val();
 
@@ -83,6 +84,12 @@ jQuery(document).ready(function () {
                 superficie = 0;
                 break;
         }
+
+        var lavorazioniSelected = {};
+        jQuery('#lavorazioni-options input[type="checkbox"]').each(function() {
+            lavorazioniSelected[this.name] = this.checked;
+        });
+
         
         // Assuming spessore is defined elsewhere
         p_reale = superficie * spessore;        
@@ -104,6 +111,7 @@ jQuery(document).ready(function () {
             quantita: quantita,
             p_reale: p_reale,
             superfice: superfice,
+            lavorazioni: lavorazioniSelected,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -112,23 +120,23 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        jQuery("#forma").val("");
-        jQuery("#materiale").val("");
-        jQuery("#spessore").val("");
-        jQuery("#quantità").val("");
-        await jQuery.ajax({
-            url: ajaxurl, // WordPress AJAX endpoint
-            type: 'POST',
-            data: tokenData,
-            success: function(response) {
-                // Handle the success response here
-                console.log(response);
-            },
-            error: function(error) {
-                // Handle the error here
-                console.error(error);
-            }
-        });
+        // jQuery("#forma").val("");
+        // jQuery("#materiale").val("");
+        // jQuery("#spessore").val("");
+        // jQuery("#quantità").val("");
+        // await jQuery.ajax({
+        //     url: ajaxurl, // WordPress AJAX endpoint
+        //     type: 'POST',
+        //     data: tokenData,
+        //     success: function(response) {
+        //         // Handle the success response here
+        //         console.log(response);
+        //     },
+        //     error: function(error) {
+        //         // Handle the error here
+        //         console.error(error);
+        //     }
+        // });
     });
 });
 

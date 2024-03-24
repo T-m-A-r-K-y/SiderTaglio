@@ -1,24 +1,24 @@
 jQuery(document).ready(function () {
 
-    jQuery('.woocommerce-help-tip').tipTip({
+    jQuery('.sidertaglio-help-tip').tipTip({
         'attribute': 'data-tip',
         'fadeIn':    50,
         'fadeOut':   50,
         'delay':     200,
     });
 
-    jQuery(".token-row .li-field-label").click(function () {
+    jQuery(".parent-token-row .li-field-parent-label").click(function () {
         // Find the corresponding settings div for the clicked label
-        var settings = jQuery(this).closest(".token-row").find(".settings");
+        var children = jQuery(this).closest(".parent-token-row").find(".child-list");
 
         // Toggle the display of the settings
-        settings.slideToggle(300);
+        children.slideToggle(300);
         jQuery(this).toggleClass("active");
     });
 
-    jQuery(".parent-token-row .li-field-label").click(function () {
+    jQuery(".token-row .li-field-label").click(function () {
         // Find the corresponding settings div for the clicked label
-        var children = jQuery(this).closest(".parent-token-row").find(".child-list");
+        var settings = jQuery(this).closest(".token-row").find(".settings");
 
         // Toggle the display of the settings
         settings.slideToggle(300);
@@ -37,16 +37,24 @@ jQuery(document).ready(function () {
         jQuery("#dropdownNewPartnershipMenu").slideToggle(300);
     });
 
+    jQuery("#addLavorazioneBtn").click(function (){
+        jQuery("#dropdownNewLavorazioneMenu").slideToggle(300);
+    });
+
     jQuery("#saveMachineBtn").click(async function () {
         // Get values from input fields
         var newId = jQuery("#newMachineId").val();
         var newName = jQuery("#newName").val();
         var newOffset = jQuery("#newOffset").val();
+        var newOffsetPercentuale = jQuery("#newOffsetPercentuale").val();
         var newSpessore = jQuery("#newSpessore").val();
+        var newVTaglio = jQuery("#newVTaglio").val();
+        var newCostoOrario = jQuery("#newCostoOrario").val();
+        var newNumeroDiCanne = jQuery("#newNumeroDiCanne").val();
         var nonce = jQuery("#_wpMachinenonce").val();
 
         // Check if all required fields are filled
-        if (!newId || !newName || !newOffset || !newSpessore) {
+        if (!newId || !newName || !newOffset || !newSpessore || !newCostoOrario || !newOffsetPercentuale || !newVTaglio || !newNumeroDiCanne) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -58,7 +66,11 @@ jQuery(document).ready(function () {
             id: newId,
             name: newName,
             offset: newOffset,
+            offset_percentuale: newOffsetPercentuale,
             spessore: newSpessore,
+            v_taglio: newVTaglio,
+            costo_orario: newCostoOrario,
+            numero_di_canne: newNumeroDiCanne,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -70,7 +82,11 @@ jQuery(document).ready(function () {
         jQuery("#newMachineId").val("");
         jQuery("#newName").val("");
         jQuery("#newOffset").val("");
+        jQuery("#newOffsetPercentuale").val("");
         jQuery("#newSpessore").val("");
+        jQuery("#newVTaglio").val("");
+        jQuery("#newCostoOrario").val("");
+        jQuery("#newNumeroDiCanne").val("");
         jQuery("#dropdownNewMacchinaMenu").slideToggle(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -191,16 +207,65 @@ jQuery(document).ready(function () {
 
     });
 
+    jQuery("#saveLavorazioneBtn").click(async function () {
+        // Get values from input fields
+        var newId = jQuery("#newLavorazioneId").val();
+        var newCostoLavorazione = jQuery("#newCostoLavorazione").val();
+        var nonce = jQuery("#_wpLavorazionenonce").val();
+
+        // Check if all required fields are filled
+        if (!newId || !newCostoLavorazione ) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_lavorazione',
+            id: newId,
+            costo: newCostoLavorazione,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        jQuery("#newLavorazioneId").val("");
+        jQuery("#newCostoLavorazione").val("");
+        jQuery("#dropdownNewLavorazioneMenu").slideToggle(300);
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
     jQuery(".token-row .saveMachineButton").click(async function () {
         // Get values from input fields
         var id = jQuery(this).closest(".token-row").find(".id").val();
         var name = jQuery(this).closest(".token-row").find(".name").val();
         var offset = jQuery(this).closest(".token-row").find(".offset").val();
+        var offset_percentuale = jQuery(this).closest(".token-row").find(".offset_percentuale").val();
         var spessore = jQuery(this).closest(".token-row").find(".spessore").val();
+        var v_taglio = jQuery(this).closest(".token-row").find(".v_taglio").val();
+        var costo_orario = jQuery(this).closest(".token-row").find(".costo_orario").val();
+        var numero_di_canne = jQuery(this).closest(".token-row").find(".numero_di_canne").val();
         var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
 
         // Check if all required fields are filled
-        if (!id || !name || !offset || !spessore) {
+        if (!id || !name || !offset || !offset_percentuale || !spessore ||!v_taglio ||!costo_orario ||!numero_di_canne) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -211,7 +276,11 @@ jQuery(document).ready(function () {
             id: id,
             name: name,
             offset: offset,
+            offset_percentuale: offset_percentuale,
             spessore: spessore,
+            v_taglio: v_taglio,
+            costo_orario: costo_orario,
+            numero_di_canne: numero_di_canne,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -241,8 +310,8 @@ jQuery(document).ready(function () {
 
     jQuery(".token-row .saveMaterialButton").click(async function () {
         var tokenRow = jQuery(this).closest(".token-row");
-        var id = tokenRow.attr("id"); // Assuming the parent ID is stored in the 'id' attribute
-        var spessore = tokenRow.find(".spessore").val(); // Retrieve the 'spessore' value
+        var id = tokenRow.find(".id").val();
+        var spessore = tokenRow.find(".spessore").val();
         var peso = tokenRow.find(".peso").val();
         var prezzo = tokenRow.find(".prezzo").val();
         var ricarico = tokenRow.find(".ricarico").val();
@@ -301,6 +370,50 @@ jQuery(document).ready(function () {
             id: id,
             percentage: percentuale,
             rottame: rottame,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300)
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .saveLavorazioneButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var costo = jQuery(this).closest(".token-row").find(".costo").val();
+        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
+
+        // Check if all required fields are filled
+        if (!id || !costo) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'save_lavorazione',
+            id: id,
+            costo: costo,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -417,6 +530,46 @@ jQuery(document).ready(function () {
         // Create an object to store the data
         var tokenData = {
             action: 'delete_partnership_level',
+            id: id,
+            security: nonce
+        };
+        const ajaxurl = '/wp-admin/admin-ajax.php';
+
+        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
+        console.log("Token Data:", tokenData);
+
+        // Clear the input fields and hide the second dropdown
+        var settings = jQuery(this).closest(".token-row").find(".settings");
+        settings.slideToggle(300);
+        var row = jQuery(this).closest(".token-row").find(".li-field-label");
+        row.toggleClass('active');
+        
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                // Handle the success response here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
+        location.reload()
+
+    });
+
+    jQuery(".token-row .deleteLavorazioneButton").click(async function () {
+        // Get values from input fields
+        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
+
+
+        // Create an object to store the data
+        var tokenData = {
+            action: 'delete_lavorazione',
             id: id,
             security: nonce
         };
