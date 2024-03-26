@@ -21,6 +21,36 @@ define( 'SPA_VERSION', '1.3' );
 define( 'SPA_FILE', __FILE__ );
 define( 'SPA_PATH', plugin_dir_path( SPA_FILE ) );
 define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
+require_once dirname( __FILE__ ) . '/assets/utility/tcpdf/tcpdf.php';
+
+/**
+ * Extends TPCPDF class to customize header
+ *
+ * @since 1.0.0
+ */
+class MYPDF extends TCPDF {
+	/**
+	 * Sets custom header
+	 *
+	 * @since 1.0.0
+	 */
+	public function Header() {
+		$image_file = ABSPATH . '/wp-content/uploads/2021/03/logo-esteso-blu-1.png';
+		$this->Image( $image_file, 10, -5, 0, 40, 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false );
+	}
+	/**
+	 * Sets custom footer
+	 *
+	 * @since 1.0.0
+	 */
+	public function Footer() {
+		$b_margin        = $this->getBreakMargin();
+		$auto_page_break = $this->AutoPageBreak;
+		$this->SetAutoPageBreak( false, 0 );
+		$this->SetAutoPageBreak( $auto_page_break, $b_margin );
+		$this->setPageMark();
+	}
+}
 
 /**
  * Adds billing information fields
@@ -61,7 +91,13 @@ function billing_information_fields( $user ) {
 	<tr>
 		<th><label for="country">Stato</label></th>
 		<td>
-			<input type="text" name="country" id="country" value="<?php echo esc_attr( get_the_author_meta( 'vatcode', $user->ID ) ); ?>" class="regular-text" /><br />
+			<input type="text" name="country" id="country" value="<?php echo esc_attr( get_the_author_meta( 'country', $user->ID ) ); ?>" class="regular-text" /><br />
+		</td>
+	</tr>
+	<tr>
+		<th><label for="phonenumber">Telefono</label></th>
+		<td>
+			<input type="tel" name="phonenumber" id="phonenumber" value="<?php echo esc_attr( get_the_author_meta( 'phonenumber', $user->ID ) ); ?>" class="regular-text" /><br />
 		</td>
 	</tr>
 	</table>
@@ -101,6 +137,9 @@ function save_billing_information_fields_fields( $user_id ) {
 	}
 	if ( isset( $_POST['country'] ) ) {
 		update_user_meta( $user_id, 'country', sanitize_text_field( wp_unslash( $_POST['country'] ) ) );
+	}
+	if ( isset( $_POST['phonenumber'] ) ) {
+		update_user_meta( $user_id, 'phonenumber', sanitize_text_field( wp_unslash( $_POST['phonenumber'] ) ) );
 	}
 }
 
@@ -178,7 +217,7 @@ function custom_user_login_shortcode() {
 	?>
 	<div class="login-page">
 		<div class="form">
-			<form class="login-form" action="<?php echo esc_url( wp_login_url( $redirect_url) ); ?>" method="post">
+			<form class="login-form" action="<?php echo esc_url( wp_login_url( $redirect_url ) ); ?>" method="post">
 				<input type="text" name="log" placeholder="Username" required />
 				<input type="password" name="pwd" placeholder="Password" required />
 				<input type="submit" value="Login" />
@@ -296,7 +335,7 @@ function form_preventivi_shortcode() {
 
 			<!-- First DropDown -->
 			<li class="firstDropDown">
-				<?php $nonce = wp_create_nonce( 'generate_pdf' ); ?>
+				<?php $nonce = wp_create_nonce( 'genera_preventivo' ); ?>
 				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 				<div class="shapeWrapper">
 				<div class="selectForma">
@@ -304,7 +343,7 @@ function form_preventivi_shortcode() {
 					<select name="forma" id="forma">
 					<option value="">Seleziona una forma...</option>
 					<option value="quadrato">Quadrato</option>
-					<option value="rettangolare">Rettangolare</option>
+					<option value="rettangolo">Rettangolo</option>
 					<option value="cerchio">Cerchio</option>
 					</select>
 				</div>
@@ -320,21 +359,21 @@ function form_preventivi_shortcode() {
 				</div>
 				
 				<div id="dimensioniQuadrato" class="campoDimensioni">
-					<label for="lato">Lato:</label>
+					<label for="lato">Lato in millimetri:</label>
 					<input type="number" id="lato" name="lato">
 					<br/>
 				</div>
 
 				<div id="dimensioniRettangolo" class="campoDimensioni">
-					<label for="larghezza">Larghezza:</label>
+					<label for="larghezza">Larghezza in millimetri:</label>
 					<input type="number" id="larghezza" name="larghezza">
-					<label for="altezza">Altezza:</label>
+					<label for="altezza">Altezza in millimetri:</label>
 					<input type="number" id="altezza" name="altezza">
 					<br/>
 				</div>
 
 				<div id="dimensioniCerchio" class="campoDimensioni">
-					<label for="raggio">Raggio:</label>
+					<label for="raggio">Raggio in millimetri:</label>
 					<input type="number" id="raggio" name="raggio">
 					<br/>
 				</div>
@@ -376,7 +415,7 @@ function form_preventivi_shortcode() {
 							?>
 							<?php $spessore = substr( $child_id, strlen( $materiale['parent_id'] ) ); ?>
 							<option class="<?php echo esc_attr( $materiale['parent_id'] ); ?>" value="<?php echo esc_attr( $spessore ); ?>" style="display: none;">
-								<?php echo esc_html( $spessore ); ?>
+								<?php echo esc_html( $spessore ); ?> millimetri
 							</option>
 							<?php
 						}
@@ -394,14 +433,14 @@ function form_preventivi_shortcode() {
 						<label for="lavorazione-<?php echo esc_attr( $lavorazione['id'] ); ?>">
 							<?php echo esc_html( strtoupper( $lavorazione['id'] ) ); ?>
 						</label><br/>
-					<?php
+						<?php
 					}
 					?>
 				</div>
 			
 				<br/>
 
-				<label for="quantità">Quantità:</label>
+				<label for="quantità">Numero pezzi:</label>
 				<input type="number" id="quantità" name="quantità">
 				<br/>
 			</li>
@@ -938,9 +977,9 @@ function sidertaglio_settings_form() {
 			<?php
 			if ( ! empty( $lavorazioni ) ) {
 				foreach ( $lavorazioni as $lavorazione ) {
-					$id          = $lavorazione['id'];
-					$data        = $lavorazione['data'];
-					$percentuale = $lavorazione['costo'];
+					$id    = $lavorazione['id'];
+					$data  = $lavorazione['data'];
+					$costo = $data['costo'];
 					?>
 						<div class="token-row">
 							<div class="handle" id="<?php echo esc_attr( $id ); ?>">
@@ -1155,7 +1194,7 @@ add_action( 'wp_ajax_nopriv_get_all_partnership_level', 'get_all_partnership_lev
 function delete_macchina() {
 	check_ajax_referer( 'delete_macchina', 'security' );
 	if ( isset( $_POST['id'] ) ) {
-		$id = 'sidertaglio_macchina_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
+		$id = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		delete_option( $id );
 	}
 	wp_die();
@@ -1174,8 +1213,8 @@ function delete_materiale() {
 	check_ajax_referer( 'delete_materiale', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
 
-		$array_id    = 'sidertaglio_materiale_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
-		$material_id = sanitize_text_field( wp_unslash( $_POST['id'] ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 		$materials   = get_option( $array_id, array() );
 		if ( isset( $materials[ $material_id ] ) ) {
 			unset( $materials[ $material_id ] );
@@ -1201,7 +1240,7 @@ add_action( 'wp_ajax_nopriv_delete_materiale', 'delete_materiale' );
 function delete_partnership_level() {
 	check_ajax_referer( 'delete_partnership_level', 'security' );
 	if ( isset( $_POST['id'] ) ) {
-		$id = 'sidertaglio_partnership_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
+		$id = 'sidertaglio_partnership_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		delete_option( $id );
 	}
 	wp_die();
@@ -1219,7 +1258,7 @@ add_action( 'wp_ajax_nopriv_delete_partnership_level', 'delete_partnership_level
 function delete_lavorazione() {
 	check_ajax_referer( 'delete_lavorazione', 'security' );
 	if ( isset( $_POST['id'] ) ) {
-		$id = 'sidertaglio_lavorazione_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
+		$id = 'sidertaglio_lavorazione_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		delete_option( $id );
 	}
 	wp_die();
@@ -1266,7 +1305,7 @@ add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
 function save_materiale() {
 	check_ajax_referer( 'save_materiale', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['prezzo_kilo'] ) && isset( $_POST['ricarico_materiale'] ) ) {
-		$array_id    = 'sidertaglio_materiale_' . sanitize_text_field( wp_unslash( $_POST['id'] ) );
+		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 		$materials   = get_option( $array_id );
 		if ( false === $materials ) {
@@ -1336,33 +1375,36 @@ add_action( 'wp_ajax_nopriv_save_lavorazione', 'save_lavorazione' );
  * Generate a PDF with the estimate of cost for a metal cut.
  *
  * @since 1.0.0
- * @return FILE
  */
 function genera_preventivo() {
 	check_ajax_referer( 'genera_preventivo', 'security' );
-	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dim_x'] ) && isset( $_POST['dim_y'] ) && isset( $_POST['quantita'] ) && isset( $_POST['superfice'] ) && isset( $_POST['perimetro'] ) && isset( $_POST['p_reale'] ) && isset( $_POST['nested'] ) && isset( $_POST['lavorazioni'] ) ) {
+	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['dim_x'] ) && isset( $_POST['dim_y'] ) && isset( $_POST['quantita'] ) && isset( $_POST['superfice'] ) && isset( $_POST['perimetro'] ) && isset( $_POST['p_reale'] ) && isset( $_POST['nested'] ) && isset( $_POST['lavorazioni'] ) && isset( $_POST['forma'] ) ) {
 		/**
 		 * Initialize variables from web
 		 */
-		$perimetro                    = sanitize_text_field( wp_unslash( $_POST['perimetro'] ) );
-		$superfice                    = sanitize_text_field( wp_unslash( $_POST['superfice'] ) );
-		$materiale                    = sanitize_text_field( wp_unslash( $_POST['materiale'] ) );
-		$spessore                     = sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
-		$dim_x                        = sanitize_text_field( wp_unslash( $_POST['dim_x'] ) );
-		$dim_y                        = sanitize_text_field( wp_unslash( $_POST['dim_y'] ) );
-		$quantita                     = sanitize_text_field( wp_unslash( $_POST['quantita'] ) );
-		$p_reale                      = sanitize_text_field( wp_unslash( $_POST['p_reale'] ) );
-		$nested                       = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['nested'] ) ) );
-		$lavorazioni_richieste_keys   = array_keys( sanitize_text_field( wp_unslash( $_POST['lavorazioni'] ) ) );
-		$lavorazioni_richieste_keys   = array_map( 'sanitize_key', $lavorazioni_richieste_keys );
-		$lavorazioni_richieste_values = array_values( sanitize_text_field( wp_unslash( $_POST['lavorazioni'] ) ) );
-		$lavorazioni_richieste_values = array_map( 'rest_sanitize_boolean', $lavorazioni_richieste );
-		$lavorazioni_richieste        = array_combine( $lavorazioni_richieste_keys, $lavorazioni_richieste_values );
-		$altri_costi                  = 0;
-		$pezzi_grezzi                 = 0;
-		$k3                           = true;
-		$k4                           = false;
+		$perimetro    = sanitize_text_field( wp_unslash( $_POST['perimetro'] ) );
+		$superfice    = sanitize_text_field( wp_unslash( $_POST['superfice'] ) );
+		$materiale    = sanitize_text_field( wp_unslash( $_POST['materiale'] ) );
+		$spessore     = sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$dim_x        = sanitize_text_field( wp_unslash( $_POST['dim_x'] ) );
+		$dim_y        = sanitize_text_field( wp_unslash( $_POST['dim_y'] ) );
+		$quantita     = sanitize_text_field( wp_unslash( $_POST['quantita'] ) );
+		$p_reale      = sanitize_text_field( wp_unslash( $_POST['p_reale'] ) );
+		$nested       = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['nested'] ) ) );
+		$forma        = sanitize_text_field( wp_unslash( $_POST['forma'] ) );
+		$altri_costi  = 100;
+		$pezzi_grezzi = 0;
+		$k3           = true;
+		$k4           = false;
 
+		if ( isset( $_POST['lavorazioni'] ) && is_array( $_POST['lavorazioni'] ) ) {
+			$lavorazioni_richieste = array();
+			foreach ( $_POST['lavorazioni'] as $key => $value ) {
+				$sanitized_key                           = sanitize_key( $key );
+				$sanitized_value                         = rest_sanitize_boolean( $value );
+				$lavorazioni_richieste[ $sanitized_key ] = $sanitized_value;
+			}
+		}
 		/**
 		 * Checks if user is logged in
 		 */
@@ -1383,7 +1425,7 @@ function genera_preventivo() {
 				$spessore_macchina = $data['spessore'];
 
 				if ( $spessore <= $spessore_macchina ) {
-					if ( ! isset( $macchina_scelta ) ) {
+					if ( isset( $macchina_scelta ) ) {
 						if ( $macchina_scelta['data']['offset'] > $offset ) {
 							$macchina_scelta = $macchina;
 						}
@@ -1407,25 +1449,32 @@ function genera_preventivo() {
 		 */
 		$user_id              = get_current_user_id();
 		$partnership_level    = get_user_meta( $user_id, 'partnership_level', true );
-		$partnership_id       = 'sidertaglio_materiale_' . strtolower( $partnership_level );
+		$partnership_id       = 'sidertaglio_partnership_' . strtolower( $partnership_level );
 		$partnership_details  = get_option( $partnership_id );
 		$ricarico_partnership = $partnership_details['percentage'];
 		$prezzo_rottame_al_kg = $partnership_details['rottame'];
 
 		/**
+		 * Retrieves billing information
+		 */
+		$firstname   = wp_get_current_user()->user_firstname;
+		$address     = get_user_meta( $user_id, 'address', true );
+		$city        = get_user_meta( $user_id, 'city', true );
+		$postalcode  = get_user_meta( $user_id, 'postalcode', true );
+		$vatcode     = get_user_meta( $user_id, 'vatcode', true );
+		$country     = get_user_meta( $user_id, 'country', true );
+		$phonenumber = get_user_meta( $user_id, 'phonenumber', true );
+
+		/**
 		 * Retrieves material details
 		 */
-		$materiale_id      = 'sidertaglio_materiale_' . $materiale;
-		$materiale_details = get_option( $materiale_id );
-		if ( ! empty( $materiale_details ) ) {
-			$children = $materiale_details['children'];
-			foreach ( $children as $child_id => $child_data ) {
-				if ( 0 === strcmp( $child_id, $materiale . $spessore ) ) {
-					$peso_specifico         = $child_data['peso_specifico'];
-					$prezzo_materiale_al_kg = $child_data['prezzo_kilo'];
-					$ricarico_materiale     = $child_data['ricarico_materiale'];
-				}
-			}
+		$materiale_id = 'sidertaglio_materiale_' . $materiale;
+		$materiali    = get_option( $materiale_id );
+		if ( ! empty( $materiali ) ) {
+			$materiale_details      = $materiali[ $materiale . $spessore ];
+			$peso_specifico         = $materiale_details['peso_specifico'];
+			$prezzo_materiale_al_kg = $materiale_details['prezzo_kilo'];
+			$ricarico_materiale     = $materiale_details['ricarico_materiale'];
 		}
 
 		/**
@@ -1455,9 +1504,9 @@ function genera_preventivo() {
 		 * Chooses which wheight to use in calculations
 		 */
 		if ( $p_quadrotto > 0 ) {
-			if ( $p_reale / $p_quadrotto <= 30 ) {
+			if ( $p_reale / $p_quadrotto <= 0.30 ) {
 				$p_utilizzato = $p_reale;
-			} elseif ( $p_reale / $p_quadrotto <= 60 ) {
+			} elseif ( $p_reale / $p_quadrotto <= 0.60 ) {
 				$p_utilizzato = $p_esterno;
 			} else {
 				$p_utilizzato = $p_quadrotto;
@@ -1508,12 +1557,16 @@ function genera_preventivo() {
 			$pezzi_grezzi * $p_quadrotto + ( $costo_lavorazioni * 1.1 );
 		} else {
 			if ( 0 === strcmp( $partnership_level, strtolower( 'Gold' ) ) || 0 === strcmp( $partnership_level, strtolower( 'Iper' ) ) ) {
-				$total += ( $costo_materiale + $costo_di_taglio + $altri_costi ) + ( ( $costo_materiale + $costo_di_taglio ) / 100 * $ricarico_partnership );
-			} elseif ( $p_reale <= 20 ) {
-				$total += ( $costo_materiale + $costo_materiale / 100 * $ricarico_partnership ) + ( $costo_di_taglio + $altri_costi ) + ( $costo_di_taglio + $altri_costi ) / 2 + ( ( $costo_lavorazioni ) + ( ( $costo_lavorazioni ) / 100 * 10 ) );
+				$total += ( $costo_materiale + $costo_di_taglio + $altri_costi ) + ( ( $costo_materiale + $costo_di_taglio ) / 100 * $ricarico_partnership ) + 10;
 			} else {
-				$total += ( $costo_materiale + $costo_materiale / 100 * $ricarico_partnership ) + ( $costo_di_taglio + $altri_costi ) + ( $costo_di_taglio + $altri_costi ) + ( ( $costo_lavorazioni ) + ( ( $costo_lavorazioni ) / 100 * 10 ) );
+				$total += ( $costo_materiale + $costo_materiale / 100 * $ricarico_partnership ) + ( $costo_di_taglio + $altri_costi );
+				if ( $p_reale <= 20 ) {
+					$total += ( $costo_di_taglio + $altri_costi ) / 2;
+				} else {
+					$total += ( $costo_di_taglio + $altri_costi );
+				}
 			}
+			$total += ( ( $costo_lavorazioni ) + ( ( $costo_lavorazioni ) / 100 * 10 ) );
 
 			if ( $k3 ) {
 				$total *= 1.025;
@@ -1523,12 +1576,302 @@ function genera_preventivo() {
 				$total *= 1.02;
 			}
 		}
+
 		if ( $total - round( $total, 0, PHP_ROUND_HALF_DOWN ) > 0.5 ) {
 			$total = round( $total, 0, PHP_ROUND_HALF_DOWN ) + 1;
 		} else {
 			$total = round( $total, 0, PHP_ROUND_HALF_DOWN ) + 0.5;
 		}
-		$total *= $quantita;
+		$total_each = $total;
+		$total     *= $quantita;
+
+		$pdf = new MYPDF( PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false );
+		// set document information.
+		$pdf->SetCreator( PDF_CREATOR );
+		$pdf->SetAuthor( 'Sidertaglio' );
+		$pdf->SetTitle( 'Preventivo' );
+		$pdf->SetSubject( 'Preventivo' );
+		$pdf->SetKeywords( 'Preventivo' );
+		// set default header data.
+		$pdf->SetHeaderData( PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 001', PDF_HEADER_STRING, array( 0, 64, 255 ), array( 0, 64, 128 ) );
+		$pdf->setFooterData( array( 0, 64, 0 ), array( 0, 64, 128 ) );
+
+		// set header and footer fonts.
+		$pdf->setHeaderFont( array( PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN ) );
+		$pdf->setFooterFont( array( PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA ) );
+		// set default monospaced font.
+		$pdf->SetDefaultMonospacedFont( PDF_FONT_MONOSPACED );
+		// set margins.
+		$pdf->SetMargins( PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT );
+		$pdf->SetHeaderMargin( PDF_MARGIN_HEADER );
+		$pdf->SetFooterMargin( PDF_MARGIN_FOOTER );
+		$pdf->SetAutoPageBreak( true, PDF_MARGIN_BOTTOM );
+		$pdf->setImageScale( PDF_IMAGE_SCALE_RATIO );
+		$pdf->AddPage( 'L', 'A3' );
+
+		$html = '
+		<style>
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				display: table;
+				box-sizing: border-box;
+				text-indent: initial;
+				border-color: gray;
+			}
+			th, td {
+				border: 1px solid #999;
+				padding: 0px 8px 8px 8px;
+				text-align: left;
+			}
+			th {
+				background-color: #BBB;
+				font-size: 12px;
+				font-weight: 700;
+			}
+			.text-center {
+				text-align: center;
+			}
+			td {
+			border: 1px solid #000;
+			}
+			span{
+			float: left;
+			}
+		</style>
+		<table>
+			<tbody>
+			<tr>
+				<th style="width:33%">SPETT.LE DITTA / <I>MESSRS</I></th>
+				<th style="width:33%">DESTINAZIONE MERCE / <I>GOODS DESTINATION</I></th>
+				<th style="padding-top:8px; width:33%; text-align:center; font-size:20px; border: 2px solid #000" colspan="2">OFFERTA CLIENTE / <I>OFFER</I></th>
+			</tr>
+			<tr>
+				<td rowspan="2">
+				<STRONG>' . strtoupper( $firstname ) . '</STRONG>
+				<br>
+				' . strtoupper( $address ) . '
+				<br>
+				' . strtoupper( $postalcode ) . ' ' . strtoupper( $city ) . ' ' . strtoupper( $country ) . '
+				<br>
+				<br>
+				Tel.: ' . strtoupper( $phonenumber ) . '
+				<BR>
+				</td>
+				<td>
+				<STRONG>' . strtoupper( $firstname ) . '</STRONG>
+				<br>
+				' . strtoupper( $address ) . '
+				<br>
+				' . strtoupper( $postalcode ) . ' ' . strtoupper( $city ) . ' ' . strtoupper( $country ) . '
+				<BR>
+				</td>
+				<td style="vertical-align:top; text-align:center; font-size: 25px;">
+				<span style="font-weight: 700; font-size: 12px; background-color: #f2f2f2; width:100%;">NR. DOCUMENTO / <I>DOC NO.</I></span>
+				<BR>
+				<STRONG>11439</STRONG>
+				</td>
+				<td style="vertical-align:top; text-align:center; font-size: 25px;">
+				<span style="font-weight: 700; font-size: 12px; background-color: #f2f2f2; width:100%;">DATA / <I>DATE</I></span>
+				<BR>
+				<STRONG>' . date( 'd/m/Y' ) . '</STRONG>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">CODICE FISCALE - PARTITA IVA / <I>FISCAL CODE - VATNUMBER</I></span>
+				<BR>
+				' . strtoupper( $vatcode ) . ' - ' . strtoupper( $vatcode ) . '
+				</td>
+				<td colspan="2">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">NS. PERSONA DI RIFERIMENTO / <I>OUR REPRESENTATIVE</I></span>
+				<br>
+				Yana Rybalko
+				</td>
+			</tr>
+			</tbody>
+	  	</table>
+		<br><br>
+		<table>
+			<tbody>
+			<tr>
+				<td style="width:20%; vertical-align:top;">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">MODALITA\' DI PAGAMENTO / <I>PAYMENT</I></span>
+				<br>
+				RI.BA 60 GG F.M
+				</td>
+				<td style="width:20%; vertical-align:top;">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">BANCA DI APPOGGIO / <I>BANK</I></span>
+				<br>
+				</td>
+				<td style="width:20%; vertical-align:top;">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">CODICE IBAN / <I>IBAN CODE</I></span>
+				<br>
+				</td>
+				<td style="width:6%; vertical-align:top; text-align: center;">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">VALUTA / <I>CURRENCY</I></span>
+				<BR>
+				EURO
+				</td>
+				<td style="width:33%; vertical-align:top;">
+				<span style="padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">VS. PERSONA DI RIFERIMENTO / <I>YOUR REPRESENTATIVE</I></span>
+				<BR>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<br><br>
+		<table>
+			<tbody >
+			<tr>
+				<th style="width:5%; text-align:center; border: 2px solid #000">POS. <BR> <I>ITEM</I></th>
+				<th style="width:10%; text-align:center; border: 2px solid #000">CODICE PRODOTTO <BR> <I>REF. NUMBER</I></th>
+				<th style="width:40%; text-align:center; border: 2px solid #000">DESCRIZIONE PRODOTTO <BR> <I>DESCRIPTION</I></th>
+				<th style="width:5%; text-align:center; border: 2px solid #000">UM <BR> <I>PECK</I></th>
+				<th style="width:8%; text-align:center; border: 2px solid #000">QUANTITA\' <BR> <I>QUANTITY</I></th>
+				<th style="width:8%; text-align:center; border: 2px solid #000">PREZZO UNITARIO <BR> <I>UNIT PRICE</I></th>
+				<th style="width:8%; text-align:center; border: 2px solid #000">IMPORTO <BR> <I>NET PRICE</I></th>
+				<th style="width:10%; text-align:center; border: 2px solid #000">CONSEGNA <BR> <I>DELIVERY</I></th>
+				<th style="width:6%; text-align:center; border: 2px solid #000">IVA <BR> <I>VAT</I></th>
+			</tr>
+			<tr style="border: 1px solid #000;">
+				
+				<td>
+				10
+				</td>
+				<td>
+				<STRONG>D1000001150</STRONG>
+				</td>
+				<td>
+				<BR>
+				<STRONG>VS. RICHIESTA/YOUR REQUEST R.D.O ' . strtoupper( $firstname ) . ' - ' . date( 'd/m' ) . '</STRONG>
+				<br>
+				<STRONG>DEL/OF ' . date( 'd/m/Y' ) . '</STRONG>
+				<br>
+				<br>
+				' . $forma . ' ' . $dim_x . 'x' . $dim_y . 'x' . $spessore . ' - ' . $materiale . '
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<strong>
+				Addebito costo per certificato € 3.50<br>
+				Validità offerta 5 gg.<br>
+				Imballo a Vs. carico con addebito €13.00/cad.<br>
+				Reso merce Franco Ns. stabilimento<br>
+				Prezzi validi solo per fornitura completa<br>
+				Tolleranze generali di taglio in accordo<br>
+				con la UNI EN ISO 9013:2017 più ns.<br>
+				condizione di fornitura<br>
+				Salvo il venduto<br>
+				</strong>
+				</td>
+				<td>
+				NR
+				</td>
+				<td>
+				' . $quantita . '
+				</td>
+				<td>
+				' . $total_each . '
+				</td>
+				<td>
+				' . $total . '
+				</td>
+				<td>
+				' . date( 'd/m/Y', time() + 86400 * 30 ) . '
+				</td>
+				<td>
+				022
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<br><br>
+		<table>
+			<tbody>
+				<tr>
+					<td style="width:21%">
+					</td>
+					<td style="width:21%; text-align: right; vertical-align:top;">
+						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">SPESE TRASPORTO / <I>TRANSPORT EXP.</I></span>
+						<BR>
+						0.00 €
+					</td>
+					<td style="width:21%; text-align: right; vertical-align:top;">
+						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">SPESE IMBALLAGGIO / <I>PACKING EXP.</I></span>
+						<BR>
+						0.00 €
+					</td>
+					<td rowspan="2" style="width:5%; vertical-align:top;">
+					</td>
+					<td rowspan="2" style="width:11%; vertical-align:top;">
+					</td>
+					<td rowspan="2" style="width:2%; vertical-align:top;">
+					</td>
+					<td rowspan="2" style="width:7%; vertical-align:top;">
+					</td>
+					<td style="width:12%; vertical-align:top;">
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: right; vertical-align:top;">
+						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">RESA / <I>SHIPMENT</I></span>
+					</td>
+					<td style="text-align: right; vertical-align:top;">
+						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">TRASPORTO A CURA DEL / <I>SHIPMENT EFFECTED BY</I></span>
+					</td>
+					<td style="text-align: right; vertical-align:top;">
+						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">PESO MERCE / <I>GOODS WEIGHT</I></span>
+						<br>
+						191.28 Kg
+					</td>
+					<td style="vertical-align:top;">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6" style="text-align:center; width:67%; vertical-align:top;">
+						<span style="padding-top:5px; font-weight: 700; font-size: 12px; width:100%;">SIDERTAGLIO SRL - Yana Rybalko</I></span>
+					</td>
+					<td colspan="2" style="text-align:right; width:33%; background-color: #BBB; vertical-align:top;">
+						<span style="text-align:center; padding-top:2px; font-weight: 600; font-size: 12px; width:100%;">TOTALE IMPONIBILE / <I>TOTAL VAT TAXABLE AMOUNT</I></span>
+						<br>
+						<strong style="font-size:30px;">774.00 €</strong>
+					
+					</td>
+				</tr>
+			</tbody>
+		</table>';
+
+		// output the HTML content.
+		$pdf->writeHTML( $html, true, false, true, false, '' );
+
+		$pdf->SetAutoPageBreak( true, 0 );
+		$pathto = 'wp-content/uploads/2024/preventivo_' . $materiale . '_' . $spessore . '_' . $dim_x . '_' . $dim_y . '.pdf';
+		$pdf->Output( ABSPATH . $pathto, 'F' );
+
+		$response_data = array(
+			'nome_macchina'     => $machine_name,
+			'partnership'       => $partnership_level,
+			'p_reale'           => $p_reale,
+			'p_quadrotto'       => $p_quadrotto,
+			'p_utilizzato'      => $p_utilizzato,
+			'p_rottame'         => $p_rottame,
+			'costo_materiale'   => $costo_materiale,
+			'costo_di_taglio'   => $costo_di_taglio,
+			'costo_lavorazioni' => $costo_lavorazioni,
+			'altri_costi'       => $altri_costi,
+			'total'             => $total,
+			'pathto'            => $pathto,
+		);
+		wp_send_json_success( $response_data );
+	} else {
+		wp_send_json_error( 'Not all params are set correctly' );
 	}
 }
 
@@ -1544,7 +1887,7 @@ add_action( 'admin_menu', 'register_sidertaglio_preventivi_automatici_settings' 
  * @return void
  */
 function register_sidertaglio_preventivi_automatici_settings() {
-	add_menu_page( esc_html__( 'Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), esc_html__( 'Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), 'manage_options', 'sidertaglio-preventivi-automatici-settings', 'sidertaglio_settings_form', '', 900 );
+	add_menu_page( esc_html__( 'AI Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), esc_html__( 'AI Preventivi Automatici Settings', 'sidertaglio-preventivi-automatici-settings' ), 'manage_options', 'sidertaglio-preventivi-automatici-settings', 'sidertaglio_settings_form', '', 900 );
 }
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'sidertaglio_preventivi_automatici_settings_link' );
 

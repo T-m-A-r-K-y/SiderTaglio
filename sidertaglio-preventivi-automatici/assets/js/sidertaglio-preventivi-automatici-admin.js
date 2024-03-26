@@ -482,15 +482,17 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".token-row .deleteMaterialButton").click(async function () {
-        // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
-        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
+        var tokenRow = jQuery(this).closest(".token-row");
+        var id = tokenRow.find(".id").val();
+        var spessore = tokenRow.find(".spessore").val();
+        var nonce = tokenRow.find(".deleteNonce").val();
 
 
         // Create an object to store the data
         var tokenData = {
             action: 'delete_materiale',
             id: id,
+            spessore: spessore,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';

@@ -79,6 +79,11 @@ h3 {
     border-radius: 5px;
 }
 
+.dropdownMenu li input[type=checkbox] {
+  min-height: auto;
+  width: auto;
+}
+
 .dropdownMenu li {
 	padding: 10px;
 	cursor:pointer;

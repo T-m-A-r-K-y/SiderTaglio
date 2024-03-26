@@ -7,7 +7,7 @@ jQuery(document).ready(function () {
             case 'quadrato':
                 jQuery('#dimensioniQuadrato').show();
                 break;
-            case 'rettangolare':
+            case 'rettangolo':
                 jQuery('#dimensioniRettangolo').show();
                 break;
             case 'cerchio':
@@ -50,16 +50,16 @@ jQuery(document).ready(function () {
                 dimX = lato;
                 dimY = lato;
                 perimetro = lato * 4;
-                superficie = lato * lato; // Area of a square = side^2
+                superfice = lato * lato; // Area of a square = side^2
                 svg = creaQuadratoSVG(lato);
                 break;
-            case 'rettangolare':
+            case 'rettangolo':
                 const larghezza = parseFloat(jQuery("#dimensioniRettangolo #larghezza").val());
                 const altezza = parseFloat(jQuery("#dimensioniRettangolo #altezza").val());
                 dimX = larghezza;
                 dimY = altezza;
                 perimetro = altezza * 2 + larghezza * 2;
-                superficie = larghezza * altezza; // Area of a rectangle = width * height
+                superfice = larghezza * altezza; // Area of a rectangle = width * height
                 svg = creaRettangoloSVG(larghezza, altezza);
                 break;
             case 'cerchio':
@@ -67,7 +67,7 @@ jQuery(document).ready(function () {
                 dimX = 2 * raggio;
                 dimY = 2 * raggio;
                 perimetro = raggio * Math.PI * 2;
-                superficie = Math.PI * raggio * raggio; // Area of a circle = π * radius^2
+                superfice = Math.PI * raggio * raggio; // Area of a circle = π * radius^2
                 svg = creaCerchioSVG(raggio);
                 break;
             case 'crescente':
@@ -76,12 +76,12 @@ jQuery(document).ready(function () {
                 const posizionePiccolo = parseFloat(jQuery("#dimensioniCrescente #posizionePiccolo").val());
                 // Calculate the area of a crescent shape
                 // Area = π * (R^2 - r^2), where R = raggioGrande, r = raggioPiccolo
-                superficie = Math.PI * (raggioGrande * raggioGrande - raggioPiccolo * raggioPiccolo);
+                superfice = Math.PI * (raggioGrande * raggioGrande - raggioPiccolo * raggioPiccolo);
                 svg = creaMezzalunaSVG(raggioGrande, raggioPiccolo, posizionePiccolo);
                 break;
             default:
                 console.log('Forma non riconosciuta');
-                superficie = 0;
+                superfice = 0;
                 break;
         }
 
@@ -92,7 +92,7 @@ jQuery(document).ready(function () {
 
         
         // Assuming spessore is defined elsewhere
-        p_reale = superficie * spessore;        
+        p_reale = superfice * spessore;        
 
 
         // Check if all required fields are filled
@@ -105,13 +105,15 @@ jQuery(document).ready(function () {
             action: 'genera_preventivo',
             materiale: materiale,
             spessore: spessore,
-            dimX: dimX,
-            dimY: dimY,
-            perimetro: perimetro,
+            dim_x: dimX,
+            dim_y: dimY,
             quantita: quantita,
-            p_reale: p_reale,
             superfice: superfice,
+            perimetro: perimetro,
+            p_reale: p_reale,
+            nested: false,
             lavorazioni: lavorazioniSelected,
+            forma: forma,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -119,24 +121,21 @@ jQuery(document).ready(function () {
         // Save the data (you can customize this part to send the data to your server or store it in your desired format)
         console.log("Token Data:", tokenData);
 
-        // Clear the input fields and hide the second dropdown
-        // jQuery("#forma").val("");
-        // jQuery("#materiale").val("");
-        // jQuery("#spessore").val("");
-        // jQuery("#quantità").val("");
-        // await jQuery.ajax({
-        //     url: ajaxurl, // WordPress AJAX endpoint
-        //     type: 'POST',
-        //     data: tokenData,
-        //     success: function(response) {
-        //         // Handle the success response here
-        //         console.log(response);
-        //     },
-        //     error: function(error) {
-        //         // Handle the error here
-        //         console.error(error);
-        //     }
-        // });
+        //Clear the input fields and hide the second dropdown
+        await jQuery.ajax({
+            url: ajaxurl, // WordPress AJAX endpoint
+            type: 'POST',
+            data: tokenData,
+            success: function(response) {
+                var pdfUrl = window.location.origin + '/' + response.data.pathto;
+                // Open the PDF in a new tab
+                window.open(pdfUrl, '_blank');
+            },
+            error: function(error) {
+                // Handle the error here
+                console.error(error);
+            }
+        });
     });
 });
 
