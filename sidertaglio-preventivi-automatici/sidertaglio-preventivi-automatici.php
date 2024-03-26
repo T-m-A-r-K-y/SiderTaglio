@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once ABSPATH . 'wp-load.php';
-define( 'SPA_VERSION', '1.3' );
+define( 'SPA_VERSION', '1.4' );
 define( 'SPA_FILE', __FILE__ );
 define( 'SPA_PATH', plugin_dir_path( SPA_FILE ) );
 define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
@@ -329,6 +329,11 @@ function form_preventivi_shortcode() {
 		}
 	</style>
 	<div class="sidertaglio_form_wrapper">
+		<div id="overlay">
+			<div class="cv-spinner">
+				<span class="spinner"></span>
+			</div>
+		</div>
 		<h3 style="text-align:center;">Ricevi il tuo preventivo in tempo reale</h3>
 		<!-- Dropdown Menu -->
 		<ul class="dropdownMenu" id="dropdownMenu">
@@ -470,6 +475,7 @@ function sidertaglio_settings_form() {
 	wp_enqueue_script( 'spa_custom_admin_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-admin.js', array( 'jquery' ), SPA_VERSION, true );
 	$macchine = get_all_macchine();
 	?>
+		
 		<style>
 			#tiptip_holder {
 				display: none;
@@ -547,7 +553,11 @@ function sidertaglio_settings_form() {
 		</style>
 			<!-- HTML Code For Form -->
 		<div class="sidertaglio_form_wrapper">
-		
+			<div id="overlay">
+				<div class="cv-spinner">
+					<span class="custom-spinner"></span>
+				</div>
+			</div>
 			<h3>Macchine da taglio</h3>
 
 			<?php
@@ -625,12 +635,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_macchina' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='saveMachineButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='saveMachineButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_macchina' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deleteMachineButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deleteMachineButton deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -782,12 +792,12 @@ function sidertaglio_settings_form() {
 												<?php $nonce = wp_create_nonce( 'save_materiale' ); ?>
 												<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 												<p class="button-left">
-													<input class='saveMaterialButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
+													<input class='saveMaterialButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
 												</p>
 												<?php $nonce = wp_create_nonce( 'delete_materiale' ); ?>
 												<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 												<p class="button-right">
-													<input class='deleteMaterialButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
+													<input class='deleteMaterialButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
 												</p>
 											</li>
 										</ul>
@@ -860,6 +870,7 @@ function sidertaglio_settings_form() {
 	?>
 		<div class="sidertaglio_form_wrapper">
 			
+				
 			<h3>Livelli di partnership</h3>
 
 			<?php
@@ -907,12 +918,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_partnership_level' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='savePartnershipButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='savePartnershipButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_partnership_level' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deletePartnershipButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deletePartnershipButton deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -1013,12 +1024,12 @@ function sidertaglio_settings_form() {
 									<?php $nonce = wp_create_nonce( 'save_lavorazione' ); ?>
 									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-left">
-										<input class='saveLavorazioneButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
+										<input class='saveLavorazioneButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
 									</p>
 									<?php $nonce = wp_create_nonce( 'delete_lavorazione' ); ?>
 									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
 									<p class="button-right">
-										<input class='deleteLavorazioneButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
+										<input class='deleteLavorazioneButton deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
 									</p>
 								</li>
 
@@ -1757,8 +1768,6 @@ function genera_preventivo() {
 				<br>
 				<br>
 				<br>
-				<br>
-				<br>
 				<strong>
 				Addebito costo per certificato € 3.50<br>
 				Validità offerta 5 gg.<br>
@@ -1801,7 +1810,7 @@ function genera_preventivo() {
 					<td style="width:21%; text-align: right; vertical-align:top;">
 						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">SPESE TRASPORTO / <I>TRANSPORT EXP.</I></span>
 						<BR>
-						0.00 €
+						' . $altri_costi . ' €
 					</td>
 					<td style="width:21%; text-align: right; vertical-align:top;">
 						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">SPESE IMBALLAGGIO / <I>PACKING EXP.</I></span>
@@ -1829,20 +1838,19 @@ function genera_preventivo() {
 					<td style="text-align: right; vertical-align:top;">
 						<span style="text-align: left;padding-top:2px; font-weight: 300; font-size: 12px; width:100%;">PESO MERCE / <I>GOODS WEIGHT</I></span>
 						<br>
-						191.28 Kg
+						' . $p_reale * $quantita. ' Kg
 					</td>
 					<td style="vertical-align:top;">
 					</td>
 				</tr>
 				<tr>
 					<td colspan="6" style="text-align:center; width:67%; vertical-align:top;">
-						<span style="padding-top:5px; font-weight: 700; font-size: 12px; width:100%;">SIDERTAGLIO SRL - Yana Rybalko</I></span>
+						<span style="padding-top:5px; font-weight: 700; font-size: 12px; width:100%;">SIDERTAGLIO SRL - Yana Rybalko</span>
 					</td>
 					<td colspan="2" style="text-align:right; width:33%; background-color: #BBB; vertical-align:top;">
 						<span style="text-align:center; padding-top:2px; font-weight: 600; font-size: 12px; width:100%;">TOTALE IMPONIBILE / <I>TOTAL VAT TAXABLE AMOUNT</I></span>
 						<br>
-						<strong style="font-size:30px;">774.00 €</strong>
-					
+						<strong style="font-size:30px;">' . $total . '</strong>
 					</td>
 				</tr>
 			</tbody>
@@ -1852,7 +1860,7 @@ function genera_preventivo() {
 		$pdf->writeHTML( $html, true, false, true, false, '' );
 
 		$pdf->SetAutoPageBreak( true, 0 );
-		$pathto = 'wp-content/uploads/2024/preventivo_' . $materiale . '_' . $spessore . '_' . $dim_x . '_' . $dim_y . '.pdf';
+		$pathto = 'wp-content/uploads/2024/preventivo_' . $forma . '_' . $materiale . '_' . $spessore . '_' . $dim_x . '_' . $dim_y . '.pdf';
 		$pdf->Output( ABSPATH . $pathto, 'F' );
 
 		$response_data = array(

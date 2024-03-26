@@ -88,12 +88,13 @@ jQuery(document).ready(function () {
         jQuery("#newCostoOrario").val("");
         jQuery("#newNumeroDiCanne").val("");
         jQuery("#dropdownNewMacchinaMenu").slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
-                // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -142,12 +143,14 @@ jQuery(document).ready(function () {
         jQuery("#newPrezzo").val("");
         jQuery("#newRicarico").val("");
         jQuery("#dropdownNewMaterialeMenu").slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -190,12 +193,14 @@ jQuery(document).ready(function () {
         jQuery("#newPercentuale").val("");
         jQuery("#newRottame").val("");
         jQuery("#dropdownNewPartnershipMenu").slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -235,12 +240,14 @@ jQuery(document).ready(function () {
         jQuery("#newLavorazioneId").val("");
         jQuery("#newCostoLavorazione").val("");
         jQuery("#dropdownNewLavorazioneMenu").slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -291,12 +298,14 @@ jQuery(document).ready(function () {
         // Clear the input fields and hide the second dropdown
         var settings = jQuery(this).closest(".token-row").find(".settings");
         settings.slideToggle(300)
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -337,11 +346,13 @@ jQuery(document).ready(function () {
     
         var settings = tokenRow.find(".settings");
         settings.slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
             data: tokenData,
             success: function(response) {
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -380,12 +391,14 @@ jQuery(document).ready(function () {
         // Clear the input fields and hide the second dropdown
         var settings = jQuery(this).closest(".token-row").find(".settings");
         settings.slideToggle(300)
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -423,13 +436,15 @@ jQuery(document).ready(function () {
 
         // Clear the input fields and hide the second dropdown
         var settings = jQuery(this).closest(".token-row").find(".settings");
-        settings.slideToggle(300)
+        settings.slideToggle(300);
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -463,13 +478,14 @@ jQuery(document).ready(function () {
         settings.slideToggle(300);
         var row = jQuery(this).closest(".token-row").find(".li-field-label");
         row.toggleClass('active');
-        
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -505,13 +521,14 @@ jQuery(document).ready(function () {
         settings.slideToggle(300);
         var row = jQuery(this).closest(".token-row").find(".li-field-label");
         row.toggleClass('active');
-        
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -545,13 +562,14 @@ jQuery(document).ready(function () {
         settings.slideToggle(300);
         var row = jQuery(this).closest(".token-row").find(".li-field-label");
         row.toggleClass('active');
-        
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {
@@ -585,13 +603,14 @@ jQuery(document).ready(function () {
         settings.slideToggle(300);
         var row = jQuery(this).closest(".token-row").find(".li-field-label");
         row.toggleClass('active');
-        
+        jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
                 // Handle the success response here
+                jQuery("#overlay").fadeOut(300);
                 console.log(response);
             },
             error: function(error) {

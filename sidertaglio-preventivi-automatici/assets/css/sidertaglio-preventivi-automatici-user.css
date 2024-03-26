@@ -245,3 +245,32 @@ h3 {
 .container .info span .fa {
   color: #EF3B3A;
 }
+#overlay{	
+  position: absolute;
+  z-index: 99999;
+  width: 70%;
+  height: 100%;
+  display: none;
+  margin: -20px;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, .4);
+}
+.cv-spinner {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px #ddd solid;
+  border-top: 4px #2e93e6 solid;
+  border-radius: 50%;
+  animation: sp-anime 0.8s infinite linear;
+}
+@keyframes sp-anime {
+  100% { 
+    transform: rotate(360deg); 
+  }
+}

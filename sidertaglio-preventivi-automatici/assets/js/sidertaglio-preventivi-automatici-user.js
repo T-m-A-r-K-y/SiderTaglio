@@ -120,13 +120,14 @@ jQuery(document).ready(function () {
 
         // Save the data (you can customize this part to send the data to your server or store it in your desired format)
         console.log("Token Data:", tokenData);
-
+        jQuery("#overlay").fadeIn(300);
         //Clear the input fields and hide the second dropdown
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
             type: 'POST',
             data: tokenData,
             success: function(response) {
+                jQuery("#overlay").fadeOut(300);
                 var pdfUrl = window.location.origin + '/' + response.data.pathto;
                 // Open the PDF in a new tab
                 window.open(pdfUrl, '_blank');
