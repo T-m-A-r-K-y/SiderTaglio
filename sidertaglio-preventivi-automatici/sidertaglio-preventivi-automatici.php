@@ -1139,9 +1139,9 @@ function get_all_macchine() {
 		if ( preg_match( '/^sidertaglio_macchina_(.*)/', $option_name, $matches ) ) {
 			$parent_id      = $matches[1];
 			$data           = get_option( $option_name );
-			$common_data    = $data[ 'common' ];
-			$child_machines = $data[ 'machines' ];
-			$saved_data[]    = array(
+			$common_data    = $data['common'];
+			$child_machines = $data['machines'];
+			$saved_data[]   = array(
 				'parent_id'   => $parent_id,
 				'common_data' => $common_data,
 				'children'    => $child_machines,
@@ -1169,8 +1169,8 @@ function get_all_materiali() {
 		if ( preg_match( '/^sidertaglio_materiale_(.*)/', $option_name, $matches ) ) {
 			$parent_id       = $matches[1];
 			$data            = get_option( $option_name );
-			$common_data     = $data[ 'common' ];
-			$child_materials = $data[ 'machines' ];
+			$common_data     = $data['common'];
+			$child_materials = $data['machines'];
 			$saved_data[]    = array(
 				'parent_id'   => $parent_id,
 				'common_data' => $common_data,
@@ -1251,16 +1251,12 @@ add_action( 'wp_ajax_nopriv_get_all_lavorazioni', 'get_all_lavorazioni' );
  */
 function delete_macchina() {
 	check_ajax_referer( 'delete_macchina', 'security' );
-	if ( isset( $_POST['id'] ) ) {
-		$id = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		delete_option( $id );
-	}
 	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
 		$array_id      = 'sidertaglio_macchina_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		$machine_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 		$machines_info = get_option( $array_id, array() );
-		if ( isset( $machines_info[ 'machines' ][ $machine_id ] ) ) {
-			unset( $machines_info[ 'machines' ][ $machine_id ] );
+		if ( isset( $machines_info['machines'][ $machine_id ] ) ) {
+			unset( $machines_info['machines'][ $machine_id ] );
 			if ( empty( $machines_info ) ) {
 				delete_option( $array_id );
 			} else {
@@ -1273,6 +1269,25 @@ function delete_macchina() {
 
 add_action( 'wp_ajax_delete_macchina', 'delete_macchina' );
 add_action( 'wp_ajax_nopriv_delete_macchina', 'delete_macchina' );
+
+/**
+ * Deletes whole machine array given its id.
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function delete_array_macchine() {
+	check_ajax_referer( 'delete_array_macchine', 'security' );
+	if ( isset( $_POST['id'] ) ) {
+		$id = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		delete_option( $id );
+	}
+	wp_die();
+}
+
+add_action( 'wp_ajax_delete_array_macchine', 'delete_array_macchine' );
+add_action( 'wp_ajax_nopriv_delete_array_macchine', 'delete_array_macchine' );
+
 
 /**
  * Deletes material given its id.
@@ -1300,6 +1315,24 @@ function delete_materiale() {
 
 add_action( 'wp_ajax_delete_materiale', 'delete_materiale' );
 add_action( 'wp_ajax_nopriv_delete_materiale', 'delete_materiale' );
+
+/**
+ * Deletes material array given its id.
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function delete_array_materiali() {
+	check_ajax_referer( 'delete_array_materiali', 'security' );
+	if ( isset( $_POST['id'] ) ) {
+		$id = 'sidertaglio_materiale_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		delete_option( $id );
+	}
+	wp_die();
+}
+
+add_action( 'wp_ajax_delete_array_materiali', 'delete_array_materiali' );
+add_action( 'wp_ajax_nopriv_delete_array_materiali', 'delete_array_materiali' );
 
 /**
  * Deletes partnership level given its id.
@@ -1338,47 +1371,104 @@ add_action( 'wp_ajax_delete_lavorazione', 'delete_lavorazione' );
 add_action( 'wp_ajax_nopriv_delete_lavorazione', 'delete_lavorazione' );
 
 /**
+ * Stores a machine array as option.
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function save_array_macchine() {
+	check_ajax_referer( 'save_array_macchine', 'security' );
+	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['spessore_max'] ) && isset( $_POST['numero_di_canne'] ) ) {
+		$array_id      = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$machines_info = get_option( $array_id );
+		if ( false === $machines_info ) {
+			$machines_info = array(
+				'common'   => array(),
+				'machines' => array(),
+			);
+		}
+		$machines_info['common'] = array(
+			'name'            => sanitize_text_field( wp_unslash( $_POST['name'] ) ),
+			'spessore_max'    => sanitize_text_field( wp_unslash( $_POST['spessore_max'] ) ),
+			'numero_di_canne' => sanitize_text_field( wp_unslash( $_POST['numero_di_canne'] ) ),
+		);
+		update_option( $array_id, $machines_info );
+	}
+	wp_die();
+}
+
+add_action( 'wp_ajax_save_array_macchine', 'save_array_macchine' );
+add_action( 'wp_ajax_nopriv_save_array_macchine', 'save_array_macchine' );
+
+/**
  * Stores a new machine as option.
  *
  * @since 1.0.0
  * @return void
  */
 function save_macchina() {
-    check_ajax_referer('save_macchina', 'security');
-    if (isset($_POST['id']) && isset($_POST['name']) && isset($_POST['offset']) && isset($_POST['offset_percentuale']) && isset($_POST['spessore']) && isset($_POST['spessore_max']) && isset($_POST['v_taglio']) && isset($_POST['costo_orario']) && isset($_POST['numero_di_canne']) && isset($_POST['innesco'])) {
-        $array_id = 'sidertaglio_macchina_' . strtoupper(sanitize_text_field(wp_unslash($_POST['id'])));
-        $machine_id = strtolower(sanitize_text_field(wp_unslash($_POST['id']))) . sanitize_text_field(wp_unslash($_POST['spessore']));
-        
-        $machines_info = get_option($array_id);
-        if ( false === $machines_info ) {
-            $machines_info = array(
-                'common' => array(),
-                'machines' => array()
-            );
-        }
-        
-        $machines_info[ 'common' ] = array(
-            'name'               => sanitize_text_field( wp_unslash( $_POST[ 'name' ] ) ),
-			'spessore_max'       => sanitize_text_field( wp_unslash( $_POST[ 'spessore_max' ] ) ),
-			'numero_di_canne'    => sanitize_text_field( wp_unslash( $_POST[ 'numero_di_canne' ] ) )
-        );
-        $machines_info[ 'machines' ][ $machine_id ] = array(
-            'offset'             => sanitize_text_field( wp_unslash( $_POST[ 'offset' ] ) ),
-            'offset_percentuale' => sanitize_text_field( wp_unslash( $_POST[ 'offset_percentuale' ] ) ),
-            'spessore'           => sanitize_text_field( wp_unslash( $_POST[ 'spessore' ] ) ),
-            'v_taglio'           => sanitize_text_field( wp_unslash( $_POST[ 'v_taglio' ] ) ),
-			'costo_orario'       => sanitize_text_field( wp_unslash( $_POST[ 'costo_orario' ] ) ),
-			'innesco'            => sanitize_text_field( wp_unslash( $_POST[ 'innesco' ] ) )
-        );
+	check_ajax_referer( 'save_macchina', 'security' );
+	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['offset'] ) && isset( $_POST['offset_percentuale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['spessore_max'] ) && isset( $_POST['v_taglio'] ) && isset( $_POST['costo_orario'] ) && isset( $_POST['numero_di_canne'] ) && isset( $_POST['innesco'] ) ) {
+		$array_id      = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$machine_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$machines_info = get_option( $array_id );
+		if ( false === $machines_info ) {
+			$machines_info = array(
+				'common'   => array(),
+				'machines' => array(),
+			);
+		}
+		$machines_info['common']                  = array(
+			'name'            => sanitize_text_field( wp_unslash( $_POST['name'] ) ),
+			'spessore_max'    => sanitize_text_field( wp_unslash( $_POST['spessore_max'] ) ),
+			'numero_di_canne' => sanitize_text_field( wp_unslash( $_POST['numero_di_canne'] ) ),
+		);
+		$machines_info['machines'][ $machine_id ] = array(
+			'offset'             => sanitize_text_field( wp_unslash( $_POST['offset'] ) ),
+			'offset_percentuale' => sanitize_text_field( wp_unslash( $_POST['offset_percentuale'] ) ),
+			'spessore'           => sanitize_text_field( wp_unslash( $_POST['spessore'] ) ),
+			'v_taglio'           => sanitize_text_field( wp_unslash( $_POST['v_taglio'] ) ),
+			'costo_orario'       => sanitize_text_field( wp_unslash( $_POST['costo_orario'] ) ),
+			'innesco'            => sanitize_text_field( wp_unslash( $_POST['innesco'] ) ),
+		);
 
-        update_option( $array_id, $machines_info );
-    }
-    wp_die();
+		update_option( $array_id, $machines_info );
+	}
+	wp_die();
 }
-
 
 add_action( 'wp_ajax_save_macchina', 'save_macchina' );
 add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
+
+/**
+ * Stores a material array as option.
+ *
+ * @since 1.0.0
+ * @return void
+ */
+function save_array_materiale() {
+	check_ajax_referer( 'save_array_materiale', 'security' );
+	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['ricarico_materiale'] ) ) {
+		$array_id       = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$material_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$materials_info = get_option( $array_id );
+		if ( false === $materials_info ) {
+			$materials_info = array(
+				'common'    => array(),
+				'materials' => array(),
+			);
+		}
+		$materials_info['common'] = array(
+			'peso_specifico'     => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
+			'ricarico_materiale' => sanitize_text_field( wp_unslash( $_POST['ricarico_materiale'] ) ),
+		);
+		update_option( $array_id, $materials_info );
+	}
+	wp_die();
+}
+
+add_action( 'wp_ajax_save_array_materiale', 'save_array_materiale' );
+add_action( 'wp_ajax_nopriv_save_array_materiale', 'save_array_materiale' );
 
 /**
  * Stores a new material as option.
@@ -1389,19 +1479,19 @@ add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
 function save_materiale() {
 	check_ajax_referer( 'save_materiale', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['prezzo_ton'] ) && isset( $_POST['ricarico_materiale'] ) ) {
-		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
-		$materials_info   = get_option( $array_id );
+		$array_id       = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$material_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$materials_info = get_option( $array_id );
 		if ( false === $materials_info ) {
 			$materials_info = array(
-                'common' => array(),
-                'materials' => array()
-            );
+				'common'    => array(),
+				'materials' => array(),
+			);
 		}
-		$materials_info['common'] = array(
+		$materials_info['common']                    = array(
 			'peso_specifico'     => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
-			'ricarico_materiale' => sanitize_text_field( wp_unslash( $_POST['ricarico_materiale'] ) )
-        );
+			'ricarico_materiale' => sanitize_text_field( wp_unslash( $_POST['ricarico_materiale'] ) ),
+		);
 		$materials_info['materials'][ $material_id ] = array(
 			'prezzo_ton' => sanitize_text_field( wp_unslash( $_POST['prezzo_ton'] ) ),
 		);
