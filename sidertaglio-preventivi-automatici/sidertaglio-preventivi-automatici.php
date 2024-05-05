@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once ABSPATH . 'wp-load.php';
-define( 'SPA_VERSION', '1.4' );
+define( 'SPA_VERSION', '1.5' );
 define( 'SPA_FILE', __FILE__ );
 define( 'SPA_PATH', plugin_dir_path( SPA_FILE ) );
 define( 'SPA_URL', plugin_dir_url( SPA_FILE ) );
@@ -563,63 +563,33 @@ function sidertaglio_settings_form() {
 			<?php
 			if ( ! empty( $macchine ) ) {
 				foreach ( $macchine as $macchina ) {
-					$id                 = $macchina['id'];
-					$data               = $macchina['data'];
-					$name               = $data['name'];
-					$offset             = $data['offset'];
-					$offset_percentuale = $data['offset_percentuale'];
-					$spessore           = $data['spessore'];
-					$v_taglio           = $data['v_taglio'];
-					$costo_orario       = $data['costo_orario'];
-					$numero_di_canne    = $data['numero_di_canne'];
+					$parent_id       = $macchina['parent_id'];
+					$common_data     = $macchina['common_data'];
+					$children        = $macchina['children'];
+					$name            = $common_data['name'];
+					$spessore_max    = $common_data['spessore_max'];
+					$numero_di_canne = $common_data['numero_di_canne'];
+
 					?>
-						<div class="token-row">
-							<div class="handle" id="<?php echo esc_attr( $id ); ?>">
-								<ul class="closed-token">
-									<li class="li-field-label">
-										<strong>
-											<span><?php echo esc_html( $name ); ?></span>
-										</strong>
-									</li>
-								</ul>
-							</div>
-
-							<div class="settings">
-								<ul class="dropdownMenu">
-										<!-- First DropDown -->
+					<div class="parent-token-row">
+						<div class="handle" id="<?php echo esc_attr( $parent_id ); ?>">
+							<ul class="closed-token">
+								<li class="li-field-parent-label">
+									<strong>
+										<span><?php echo esc_html( $parent_id ); ?></span>
+									</strong>
+								</li>
+							</ul>
+						</div>
+						<div class="parent-settings">
+							<ul class="dropdownMenu">
 								<li>
-								<label for="<?php echo esc_attr( $id . '_id' ); ?>">ID della macchina:</label>
-									<input type="text" class="id" readonly value="<?php echo esc_attr( $id ); ?>" id="<?php echo esc_attr( $id . '_id' ); ?>"/>
-						
-									<br/>
-
 									<label for="<?php echo esc_attr( $id . '_name' ); ?>">Nome della macchina:</label>
 									<input type="text" class="name" value="<?php echo esc_attr( $name ); ?>" id="<?php echo esc_attr( $id . '_name' ); ?>"/>
-						
 									<br/>
 
-									<label for="<?php echo esc_attr( $id . '_offset' ); ?>">Larghezza del taglio in millimetri:</label>
-									<input type="number" class="offset" value="<?php echo esc_attr( $offset ); ?>" id="<?php echo esc_attr( $id . '_offset' ); ?>"/>
-						
-									<br/>
-
-									<label for="<?php echo esc_attr( $id . '_offset_percentuale' ); ?>">Percentuale di materiale da lasciare:</label>
-									<input type="number" class="offset_percentuale" value="<?php echo esc_attr( $offset_percentuale ); ?>" id="<?php echo esc_attr( $id . '_offset_percentuale' ); ?>"/>
-						
-									<br/>
-									
-									<label for="<?php echo esc_attr( $id . '_spessore' ); ?>">Spessore massimo tagliabile in millimetri:</label>
-									<input type="number" class="spessore" value="<?php echo esc_attr( $spessore ); ?>" id="<?php echo esc_attr( $id . '_spessore' ); ?>"/>
-						
-									<br/>
-
-									<label for="<?php echo esc_attr( $id . '_v_taglio' ); ?>">Velocità di taglio in millimetri/secondo:</label>
-									<input type="number" class="v_taglio" value="<?php echo esc_attr( $v_taglio ); ?>" id="<?php echo esc_attr( $id . '_v_taglio' ); ?>"/>
-						
-									<br/> 
-
-									<label for="<?php echo esc_attr( $id . '_costo_orario' ); ?>">Costo orario in €/ora:</label>
-									<input type="number" class="costo_orario" value="<?php echo esc_attr( $costo_orario ); ?>" id="<?php echo esc_attr( $id . '_costo_orario' ); ?>"/>
+									<label for="<?php echo esc_attr( $id . '_spessore_max' ); ?>">Spessore massimo tagliabile in millimetri:</label>
+									<input type="number" class="spessore_max" value="<?php echo esc_attr( $spessore_max ); ?>" id="<?php echo esc_attr( $id . '_spessore_max' ); ?>"/>
 						
 									<br/>
 
@@ -627,26 +597,87 @@ function sidertaglio_settings_form() {
 									<input type="number" class="numero_di_canne" value="<?php echo esc_attr( $numero_di_canne ); ?>" id="<?php echo esc_attr( $id . '_numero_di_canne' ); ?>"/>
 						
 									<br/>
-									
 								</li>
-
-								<!-- Save Button -->
-								<li class="saveButtonLi">
-									<?php $nonce = wp_create_nonce( 'save_macchina' ); ?>
-									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-left">
-										<input class='saveMachineButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $id . '_save' ); ?>">
-									</p>
-									<?php $nonce = wp_create_nonce( 'delete_macchina' ); ?>
-									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-right">
-										<input class='deleteMachineButton deleteButton' value="Elimina" type="button"  id="<?php echo esc_attr( $id . '_delete' ); ?>">
-									</p>
-								</li>
-
-								</ul>
-							</div>
+							</ul>
 						</div>
+
+
+						<div class="child-list">
+							<?php
+							foreach ( $children as $child_id => $child_data ) {
+								$prezzo             = $child_data['prezzo_kilo'];
+								$spessore           = substr( $child_id, strlen( $parent_id ) );
+								$offset             = $child_data['offset'];
+								$offset_percentuale = $child_data['offset_percentuale'];
+								$spessore           = $child_data['spessore'];
+								$v_taglio           = $child_data['v_taglio'];
+								$costo_orario       = $child_data['costo_orario'];
+								?>
+								<div class="token-row">
+									<div class="handle" id="<?php echo esc_attr( $child_id ); ?>">
+										<ul class="closed-token">
+											<li class="li-field-label">
+												<strong>
+													<span><?php echo esc_html( $child_id ); ?></span>
+												</strong>
+											</li>
+										</ul>
+									</div>
+
+									<div class="settings">
+										<ul class="dropdownMenu">
+											<li>
+												<label for="<?php echo esc_attr( $child_id . '_id' ); ?>">ID della macchina:</label>
+												<input type="text" class="id" readonly value="<?php echo esc_attr( $parent_id ); ?>" id="<?php echo esc_attr( $child_id . '_id' ); ?>"/>
+									
+												<br/>
+
+												<label for="<?php echo esc_attr( $child_id . '_offset' ); ?>">Larghezza del taglio in millimetri:</label>
+												<input type="number" class="offset" value="<?php echo esc_attr( $offset ); ?>" id="<?php echo esc_attr( $child_id . '_offset' ); ?>"/>
+									
+												<br/>
+
+												<label for="<?php echo esc_attr( $child_id . '_offset_percentuale' ); ?>">Percentuale di materiale da lasciare:</label>
+												<input type="number" class="offset_percentuale" value="<?php echo esc_attr( $offset_percentuale ); ?>" id="<?php echo esc_attr( $child_id . '_offset_percentuale' ); ?>"/>
+									
+												<br/>
+												
+												<label for="<?php echo esc_attr( $child_id . '_spessore' ); ?>">Spessore massimo tagliabile in millimetri:</label>
+												<input type="number" class="spessore" value="<?php echo esc_attr( $spessore ); ?>" id="<?php echo esc_attr( $child_id . '_spessore' ); ?>"/>
+									
+												<br/>
+
+												<label for="<?php echo esc_attr( $child_id . '_v_taglio' ); ?>">Velocità di taglio in millimetri/secondo:</label>
+												<input type="number" class="v_taglio" value="<?php echo esc_attr( $v_taglio ); ?>" id="<?php echo esc_attr( $child_id . '_v_taglio' ); ?>"/>
+									
+												<br/> 
+
+												<label for="<?php echo esc_attr( $child_id . '_costo_orario' ); ?>">Costo orario in €/ora:</label>
+												<input type="number" class="costo_orario" value="<?php echo esc_attr( $costo_orario ); ?>" id="<?php echo esc_attr( $child_id . '_costo_orario' ); ?>"/>
+									
+												<br/>
+											</li>
+
+											<li class="saveButtonLi">
+												<?php $nonce = wp_create_nonce( 'save_macchina' ); ?>
+												<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+												<p class="button-left">
+													<input class='saveMachineButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
+												</p>
+												<?php $nonce = wp_create_nonce( 'delete_macchina' ); ?>
+												<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+												<p class="button-right">
+													<input class='deleteMachineButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
+												</p>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<?php
+							}
+							?>
+						</div>
+					</div>
 					<?php
 				}
 			}
@@ -683,8 +714,13 @@ function sidertaglio_settings_form() {
 				
 				<br/>
 
-				<label for="newSpessore">Spessore massimo tagliabile in millimetri:</label>
-				<input type="number" placeholder="e.g.: 100" id="newSpessore"/>
+				<label for="newSpessoreMax">Spessore massimo tagliabile in millimetri:</label>
+				<input type="number" placeholder="e.g.: 100" id="newSpessoreMax"/>
+				
+				<br/>
+
+				<label for="newSpessore">Spessore del materiale da tagliare:</label>
+				<input type="number" placeholder="e.g.: 8" id="newSpessore"/>
 				
 				<br/>
 
@@ -730,8 +766,12 @@ function sidertaglio_settings_form() {
 			<?php
 			if ( ! empty( $materiali ) ) {
 				foreach ( $materiali as $materiale ) {
-					$parent_id = $materiale['parent_id'];
-					$children  = $materiale['children'];
+					$parent_id   = $materiale['parent_id'];
+					$common_data = $materiale['common_data'];
+					$children    = $materiale['children'];
+					$peso        = $common_data['peso_specifico'];
+					$ricarico    = $common_data['ricarico_materiale'];
+
 					?>
 					<div class="parent-token-row">
 						<div class="handle" id="<?php echo esc_attr( $parent_id ); ?>">
@@ -743,14 +783,27 @@ function sidertaglio_settings_form() {
 								</li>
 							</ul>
 						</div>
+						<div class="parent-settings">
+							<ul class="dropdownMenu">
+								<li>
+									<label for="<?php echo esc_attr( $child_id . '_peso' ); ?>">Peso specifico in kg/m<sup>3</sup>:</label>
+									<input type="number" class="peso" value="<?php echo esc_attr( $peso ); ?>" id="<?php echo esc_attr( $child_id . '_peso' ); ?>"/>
+									</br>
+
+									<label for="<?php echo esc_attr( $child_id . '_ricarico' ); ?>">Ricarico percentuale sul prezzo:</label>
+									<input type="number" class="ricarico" value="<?php echo esc_attr( $ricarico ); ?>" id="<?php echo esc_attr( $child_id . '_ricarico' ); ?>"/>
+									
+									<br/>
+								</li>
+							</ul>
+						</div>
+
 
 						<div class="child-list">
 							<?php
 							foreach ( $children as $child_id => $child_data ) {
-								$peso     = $child_data['peso_specifico'];
 								$prezzo   = $child_data['prezzo_kilo'];
 								$spessore = substr( $child_id, strlen( $parent_id ) );
-								$ricarico = $child_data['ricarico_materiale'];
 								?>
 								<div class="token-row">
 									<div class="handle" id="<?php echo esc_attr( $child_id ); ?>">
@@ -774,18 +827,9 @@ function sidertaglio_settings_form() {
 												<input readonly type="number" class="spessore" value="<?php echo esc_attr( $spessore ); ?>" id="<?php echo esc_attr( $child_id . '_spessore' ); ?>"/>
 												</br>
 
-												<label for="<?php echo esc_attr( $child_id . '_peso' ); ?>">Peso specifico in kg/m<sup>3</sup>:</label>
-												<input type="number" class="peso" value="<?php echo esc_attr( $peso ); ?>" id="<?php echo esc_attr( $child_id . '_peso' ); ?>"/>
-												</br>
-
 												<label for="<?php echo esc_attr( $child_id . '_prezzo' ); ?>">Prezzo al kg:</label>
 												<input type="number" class="prezzo" value="<?php echo esc_attr( $prezzo ); ?>" id="<?php echo esc_attr( $child_id . '_prezzo' ); ?>"/>
 												</br>
-
-												<label for="<?php echo esc_attr( $child_id . '_ricarico' ); ?>">Ricarico percentuale sul prezzo:</label>
-												<input type="number" class="ricarico" value="<?php echo esc_attr( $ricarico ); ?>" id="<?php echo esc_attr( $child_id . '_ricarico' ); ?>"/>
-												
-												<br/>
 											</li>
 
 											<li class="saveButtonLi">
@@ -1093,14 +1137,14 @@ function get_all_macchine() {
 	$option_names = wp_load_alloptions();
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_macchina_(.*)/', $option_name, $matches ) ) {
-			$id   = $matches[1];
-			$data = get_option( $option_name );
-			array_push(
-				$saved_data,
-				array(
-					'id'   => $id,
-					'data' => $data,
-				)
+			$parent_id      = $matches[1];
+			$data           = get_option( $option_name );
+			$common_data    = $data[ 'common' ];
+			$child_machines = $data[ 'machines' ];
+			$saved_data[]    = array(
+				'parent_id'   => $parent_id,
+				'common_data' => $common_data,
+				'children'    => $child_machines,
 			);
 		}
 	}
@@ -1124,10 +1168,13 @@ function get_all_materiali() {
 	foreach ( $option_names as $option_name => $value ) {
 		if ( preg_match( '/^sidertaglio_materiale_(.*)/', $option_name, $matches ) ) {
 			$parent_id       = $matches[1];
-			$child_materials = get_option( $option_name );
+			$data            = get_option( $option_name );
+			$common_data     = $data[ 'common' ];
+			$child_materials = $data[ 'machines' ];
 			$saved_data[]    = array(
-				'parent_id' => $parent_id,
-				'children'  => $child_materials,
+				'parent_id'   => $parent_id,
+				'common_data' => $common_data,
+				'children'    => $child_materials,
 			);
 		}
 	}
@@ -1193,8 +1240,8 @@ function get_all_lavorazioni() {
 	return $saved_data;
 }
 
-add_action( 'wp_ajax_get_all_partnership_level', 'get_all_partnership_level' );
-add_action( 'wp_ajax_nopriv_get_all_partnership_level', 'get_all_partnership_level' );
+add_action( 'wp_ajax_get_all_lavorazioni', 'get_all_lavorazioni' );
+add_action( 'wp_ajax_nopriv_get_all_lavorazioni', 'get_all_lavorazioni' );
 
 /**
  * Deletes machine given its id.
@@ -1207,6 +1254,19 @@ function delete_macchina() {
 	if ( isset( $_POST['id'] ) ) {
 		$id = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		delete_option( $id );
+	}
+	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
+		$array_id      = 'sidertaglio_macchina_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
+		$machine_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$machines_info = get_option( $array_id, array() );
+		if ( isset( $machines_info[ 'machines' ][ $machine_id ] ) ) {
+			unset( $machines_info[ 'machines' ][ $machine_id ] );
+			if ( empty( $machines_info ) ) {
+				delete_option( $array_id );
+			} else {
+				update_option( $array_id, $machines_info );
+			}
+		}
 	}
 	wp_die();
 }
@@ -1223,7 +1283,6 @@ add_action( 'wp_ajax_nopriv_delete_macchina', 'delete_macchina' );
 function delete_materiale() {
 	check_ajax_referer( 'delete_materiale', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
-
 		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 		$materials   = get_option( $array_id, array() );
@@ -1285,24 +1344,38 @@ add_action( 'wp_ajax_nopriv_delete_lavorazione', 'delete_lavorazione' );
  * @return void
  */
 function save_macchina() {
-	check_ajax_referer( 'save_macchina', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['offset'] ) && isset( $_POST['offset_percentuale'] ) && isset( $_POST['spessore'] ) && isset( $_POST['v_taglio'] ) && isset( $_POST['costo_orario'] ) && isset( $_POST['numero_di_canne'] ) ) {
-		$id = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		update_option(
-			$id,
-			array(
-				'name'               => sanitize_text_field( wp_unslash( $_POST['name'] ) ),
-				'offset'             => sanitize_text_field( wp_unslash( $_POST['offset'] ) ),
-				'offset_percentuale' => sanitize_text_field( wp_unslash( $_POST['offset_percentuale'] ) ),
-				'spessore'           => sanitize_text_field( wp_unslash( $_POST['spessore'] ) ),
-				'v_taglio'           => sanitize_text_field( wp_unslash( $_POST['v_taglio'] ) ),
-				'costo_orario'       => sanitize_text_field( wp_unslash( $_POST['costo_orario'] ) ),
-				'numero_di_canne'    => sanitize_text_field( wp_unslash( $_POST['numero_di_canne'] ) ),
-			)
-		);
-	}
-	wp_die();
+    check_ajax_referer('save_macchina', 'security');
+    if (isset($_POST['id']) && isset($_POST['name']) && isset($_POST['offset']) && isset($_POST['offset_percentuale']) && isset($_POST['spessore']) && isset($_POST['spessore_max']) && isset($_POST['v_taglio']) && isset($_POST['costo_orario']) && isset($_POST['numero_di_canne']) && isset($_POST['innesco'])) {
+        $array_id = 'sidertaglio_macchina_' . strtoupper(sanitize_text_field(wp_unslash($_POST['id'])));
+        $machine_id = strtolower(sanitize_text_field(wp_unslash($_POST['id']))) . sanitize_text_field(wp_unslash($_POST['spessore']));
+        
+        $machines_info = get_option($array_id);
+        if ( false === $machines_info ) {
+            $machines_info = array(
+                'common' => array(),
+                'machines' => array()
+            );
+        }
+        
+        $machines_info[ 'common' ] = array(
+            'name'               => sanitize_text_field( wp_unslash( $_POST[ 'name' ] ) ),
+			'spessore_max'       => sanitize_text_field( wp_unslash( $_POST[ 'spessore_max' ] ) ),
+			'numero_di_canne'    => sanitize_text_field( wp_unslash( $_POST[ 'numero_di_canne' ] ) )
+        );
+        $machines_info[ 'machines' ][ $machine_id ] = array(
+            'offset'             => sanitize_text_field( wp_unslash( $_POST[ 'offset' ] ) ),
+            'offset_percentuale' => sanitize_text_field( wp_unslash( $_POST[ 'offset_percentuale' ] ) ),
+            'spessore'           => sanitize_text_field( wp_unslash( $_POST[ 'spessore' ] ) ),
+            'v_taglio'           => sanitize_text_field( wp_unslash( $_POST[ 'v_taglio' ] ) ),
+			'costo_orario'       => sanitize_text_field( wp_unslash( $_POST[ 'costo_orario' ] ) ),
+			'innesco'            => sanitize_text_field( wp_unslash( $_POST[ 'innesco' ] ) )
+        );
+
+        update_option( $array_id, $machines_info );
+    }
+    wp_die();
 }
+
 
 add_action( 'wp_ajax_save_macchina', 'save_macchina' );
 add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
@@ -1315,19 +1388,24 @@ add_action( 'wp_ajax_nopriv_save_macchina', 'save_macchina' );
  */
 function save_materiale() {
 	check_ajax_referer( 'save_materiale', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['prezzo_kilo'] ) && isset( $_POST['ricarico_materiale'] ) ) {
+	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) && isset( $_POST['peso_specifico'] ) && isset( $_POST['prezzo_ton'] ) && isset( $_POST['ricarico_materiale'] ) ) {
 		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
 		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
-		$materials   = get_option( $array_id );
-		if ( false === $materials ) {
-			$materials = array();
+		$materials_info   = get_option( $array_id );
+		if ( false === $materials_info ) {
+			$materials_info = array(
+                'common' => array(),
+                'materials' => array()
+            );
 		}
-		$materials[ $material_id ] = array(
+		$materials_info['common'] = array(
 			'peso_specifico'     => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
-			'prezzo_kilo'        => sanitize_text_field( wp_unslash( $_POST['prezzo_kilo'] ) ),
-			'ricarico_materiale' => sanitize_text_field( wp_unslash( $_POST['ricarico_materiale'] ) ),
+			'ricarico_materiale' => sanitize_text_field( wp_unslash( $_POST['ricarico_materiale'] ) )
+        );
+		$materials_info['materials'][ $material_id ] = array(
+			'prezzo_ton' => sanitize_text_field( wp_unslash( $_POST['prezzo_ton'] ) ),
 		);
-		update_option( $array_id, $materials );
+		update_option( $array_id, $materials_info );
 	}
 	wp_die();
 }
@@ -1495,7 +1573,7 @@ function genera_preventivo() {
 		$lavorazioni_temp = array();
 		if ( ! empty( $lavorazioni ) ) {
 			foreach ( $lavorazioni as $lavorazione ) {
-				$lavorazioni_temp[ strtolower( $lavorazione['id'] ) ] = $lavorazione['data'];
+				$lavorazioni_temp[ strtolower( $lavorazione['id'] ) ] = $lavorazione['data']['costo'];
 			}
 		}
 		$lavorazioni = $lavorazioni_temp;
@@ -1533,7 +1611,7 @@ function genera_preventivo() {
 			$costo_materiale = ( ( $p_reale + ( $p_reale * $machine_offset_percentuale / 100 ) ) * ( $prezzo_materiale_al_kg + ( $prezzo_materiale_al_kg * $ricarico_materiale / 100 ) ) + ( $p_rottame * ( ( $prezzo_materiale_al_kg + ( $prezzo_materiale_al_kg * $ricarico_materiale / 100 ) ) - $prezzo_rottame_al_kg ) ) );
 			$numero_canne    = 1;
 		} else {
-			$costo_materiale = ( ( $p_quadrotto_plus_10 * ( $prezzo_materiale_al_kg + $prezzo_materiale_al_kg / 100 * $ricarico_materiale ) ) - ( $p_rottame * $prezzo_rottame_al_kg ) );
+			$costo_materiale = ( ( $p_quadrotto * ( $prezzo_materiale_al_kg + $prezzo_materiale_al_kg / 100 * $ricarico_materiale ) ) - ( $p_rottame * $prezzo_rottame_al_kg ) );
 		}
 
 		/**
@@ -1864,6 +1942,9 @@ function genera_preventivo() {
 		$pdf->Output( ABSPATH . $pathto, 'F' );
 
 		$response_data = array(
+			'tempo_taglio'      => $tempo_di_taglio,
+			'perimetro'         => $perimetro,
+			'v_taglio'          => $machine_v_taglio,
 			'nome_macchina'     => $machine_name,
 			'partnership'       => $partnership_level,
 			'p_reale'           => $p_reale,

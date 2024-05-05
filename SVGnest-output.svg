@@ -1,1 +1,5 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" width="1147.592px" height="1397.27px" viewBox="0 0 1147.592 1397.27"><g transform="translate(0 0)"><rect width="37" height="37" fill="none" stroke="#010101" class="bin" transform="translate(0 0)"/><g transform="translate(588.8437185 451.42794169999996) rotate(180)"><polygon fill="none" stroke="#010101" stroke-miterlimit="10" points="588.396,447.215     566.488,450.935 566.488,432.651 "/></g><g transform="translate(-65.987999 -427.2025031) rotate(0)"><polygon fill="none" stroke="#010101" stroke-miterlimit="10" points="88.396,447.215     66.488,450.935 66.488,432.651 "/></g></g></svg>
+﻿<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="37" height="37" viewBox="0 0 37 37" xml:space="preserve">
+  <polygon fill="none" stroke="#010101" stroke-miterlimit="10" points="11.10180165558726, 2.220446049250313e-16 1.2160188425998213, 8.91747151239869 0, 0"/>
+  <polygon fill="none" stroke="#010101" stroke-miterlimit="10" points="1.216018842599821, 8.91747151239869 11.10180165558726, 0.0 12.31782049818708, 8.91747151239869"/>
+<rect width="37" height="37" fill="none" stroke="#010101" />
+</svg>

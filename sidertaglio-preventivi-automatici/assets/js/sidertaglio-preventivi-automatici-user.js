@@ -127,6 +127,7 @@ jQuery(document).ready(function () {
             type: 'POST',
             data: tokenData,
             success: function(response) {
+                console.log(response);
                 jQuery("#overlay").fadeOut(300);
                 var pdfUrl = window.location.origin + '/' + response.data.pathto;
                 // Open the PDF in a new tab
