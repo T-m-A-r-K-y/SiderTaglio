@@ -473,6 +473,18 @@ function sidertaglio_settings_form() {
 	wp_enqueue_script( 'spa-jquery-tiptip', SPA_URL . 'assets/js/jquery.tipTip.min.js', array( 'jquery' ), SPA_VERSION, true );
 	wp_enqueue_style( 'spa_custom_admin_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici-admin.css', array(), SPA_VERSION, null, 'all' );
 	wp_enqueue_script( 'spa_custom_admin_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-admin.js', array( 'jquery' ), SPA_VERSION, true );
+	?>
+    <div class="wrap">
+        <h1>Sidertaglio Preventivi Automatici Settings</h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields('sidertaglio_options_group'); // Output nonce, action, and option_page fields
+            do_settings_sections('sidertaglio_settings'); // Prints out all settings sections added to this page
+            submit_button();
+            ?>
+        </form>
+    </div>
+    <?php
 	$macchine = get_all_macchine();
 	?>
 		
@@ -579,6 +591,9 @@ function sidertaglio_settings_form() {
 										<span><?php echo esc_html( $parent_id ); ?></span>
 									</strong>
 								</li>
+								<li class="new-child-button">
+									<div class="icon-plus-button">&plus;</div>
+								</li>
 							</ul>
 						</div>
 						<div class="parent-settings">
@@ -598,10 +613,20 @@ function sidertaglio_settings_form() {
 						
 									<br/>
 								</li>
+								<li class="saveButtonLi">
+									<?php $nonce = wp_create_nonce( 'save_array_macchine' ); ?>
+									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+									<p class="button-left">
+										<input class='saveMachineArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
+									</p>
+									<?php $nonce = wp_create_nonce( 'delete_array_macchine' ); ?>
+									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+									<p class="button-right">
+										<input class='deleteMachineArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
+									</p>
+								</li>
 							</ul>
 						</div>
-
-
 						<div class="child-list">
 							<?php
 							foreach ( $children as $child_id => $child_data ) {
@@ -781,6 +806,9 @@ function sidertaglio_settings_form() {
 										<span><?php echo esc_html( $parent_id ); ?></span>
 									</strong>
 								</li>
+								<li class="new-child-button">
+									<div class="icon-plus-button">&plus;</div>
+								</li>
 							</ul>
 						</div>
 						<div class="parent-settings">
@@ -794,6 +822,18 @@ function sidertaglio_settings_form() {
 									<input type="number" class="ricarico" value="<?php echo esc_attr( $ricarico ); ?>" id="<?php echo esc_attr( $child_id . '_ricarico' ); ?>"/>
 									
 									<br/>
+								</li>
+								<li class="saveButtonLi">
+									<?php $nonce = wp_create_nonce( 'save_array_materiali' ); ?>
+									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+									<p class="button-left">
+										<input class='saveMaterialArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
+									</p>
+									<?php $nonce = wp_create_nonce( 'delete_array_macchine' ); ?>
+									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+									<p class="button-right">
+										<input class='deleteMaterialArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
+									</p>
 								</li>
 							</ul>
 						</div>

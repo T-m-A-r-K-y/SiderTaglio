@@ -358,7 +358,7 @@ h3 {
 	padding-top: 0;
 	padding-bottom: 0;
 	background-color: #fff;
-	border-left-width: 4px;
+	border-left-width: 8px;
 	border-left-style: solid;
 	border-left-color: #FFFFFF00;
 }
@@ -374,6 +374,16 @@ h3 {
 	border-left-color: #2271b1;
 }
 
+.parent-settings {
+	display: none;
+	box-sizing: border-box;
+	padding-top: 0;
+	padding-bottom: 0;
+	background-color: #fff;
+	border-left-width: 4px;
+	border-left-style: solid;
+	border-left-color: #2271b1;
+}
 .li-field-name{
 	box-sizing: border-box;
 	line-height: 4.7em;
@@ -459,4 +469,60 @@ h3 {
 	100% { 
 		transform: rotate(360deg); 
 	}
+}
+.icon-plus-button {
+	position: relative;
+	border-radius: 10%;
+	color: #fff;
+	height: 100px;
+	width: 100px;
+	line-height: 90px;
+	font-size: 96px;
+	text-align: center;
+	transition: all .3s;
+	z-index: 1;
+	margin: 2.5em auto;
+	cursor: pointer;
+}
+
+.icon-plus-button:before {
+	background-color: #fff;
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	width: 20%;
+	transform: translateX(-50%);
+	transition: all .3s;
+	z-index: -1;
+}
+
+.icon-plus-button:after {
+	background-color: #fff;
+	content: '';
+	display: block;
+	position: absolute;
+	top: 50%;
+	height: 20%;
+	left: 0;
+	right: 0;
+	transform: translateY(-50%);
+	transition: all .3s;
+	z-index: -1;
+}
+
+.icon-plus-button:hover {
+	color: #555;
+}
+
+.icon-plus-button:hover:before {
+	border-radius: 10%;
+	width: 100%;
+}
+
+.icon-plus-button:hover:after {
+	border-radius: 10%;
+	height: 100%;
 }
