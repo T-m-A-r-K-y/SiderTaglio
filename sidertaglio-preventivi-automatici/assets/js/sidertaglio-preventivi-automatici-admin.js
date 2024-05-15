@@ -47,6 +47,7 @@ jQuery(document).ready(function () {
         var newName = jQuery("#newName").val();
         var newOffset = jQuery("#newOffset").val();
         var newSpessore = jQuery("#newSpessore").val();
+        var newSpessoreMax = jQuery("#newSpessoreMax").val();
         var newVTaglio = jQuery("#newVTaglio").val();
         var newCostoOrario = jQuery("#newCostoOrario").val();
         var newNumeroDiCanne = jQuery("#newNumeroDiCanne").val();
@@ -67,9 +68,11 @@ jQuery(document).ready(function () {
             name: newName,
             offset: newOffset,
             spessore: newSpessore,
+            spessore_max: newSpessoreMax,
             v_taglio: newVTaglio,
             costo_orario: newCostoOrario,
             numero_di_canne: newNumeroDiCanne,
+            innesco: newInnesco,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -82,6 +85,7 @@ jQuery(document).ready(function () {
         jQuery("#newName").val("");
         jQuery("#newOffset").val("");
         jQuery("#newSpessore").val("");
+        jQuery("#newSpessoreMax").val("");
         jQuery("#newVTaglio").val("");
         jQuery("#newCostoOrario").val("");
         jQuery("#newNumeroDiCanne").val("");
@@ -126,7 +130,7 @@ jQuery(document).ready(function () {
             id: newId,
             spessore: newSpessoreMateriale,
             peso_specifico: newPeso,
-            prezzo_kilo: newPrezzo,
+            prezzo_ton: newPrezzo,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -257,18 +261,32 @@ jQuery(document).ready(function () {
 
     jQuery(".token-row .saveMachineButton").click(async function () {
         // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
-        var name = jQuery(this).closest(".token-row").find(".name").val();
+        var id = jQuery(this).closest(".child-list").find(".parent_id").val();
+        var name = jQuery(this).closest(".child-list").find(".name").val();
         var offset = jQuery(this).closest(".token-row").find(".offset").val();
         var spessore = jQuery(this).closest(".token-row").find(".spessore").val();
+        var spessore_max = jQuery(this).closest(".child-list").find(".spessore_max").val();
         var v_taglio = jQuery(this).closest(".token-row").find(".v_taglio").val();
         var costo_orario = jQuery(this).closest(".token-row").find(".costo_orario").val();
-        var numero_di_canne = jQuery(this).closest(".token-row").find(".numero_di_canne").val();
+        var numero_di_canne = jQuery(this).closest(".child-list").find(".numero_di_canne").val();
         var innesco = jQuery(this).closest(".token-row").find(".innesco").val();
         var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
-
+        var tokenData = {
+            action: 'save_macchina',
+            id: id,
+            name: name,
+            offset: offset,
+            spessore: spessore,
+            spessore_max: spessore_max,
+            v_taglio: v_taglio,
+            costo_orario: costo_orario,
+            numero_di_canne: numero_di_canne,
+            innesco: innesco,
+            security: nonce
+        }; 
+        console.log("Token Data:", tokenData);
         // Check if all required fields are filled
-        if (!id || !name || !offset || !spessore ||!v_taglio ||!costo_orario ||!numero_di_canne ||!innesco) {
+        if (!id || !name || !offset || !spessore || !spessore_max ||!v_taglio ||!costo_orario ||!numero_di_canne ||!innesco) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -280,6 +298,7 @@ jQuery(document).ready(function () {
             name: name,
             offset: offset,
             spessore: spessore,
+            spessore_max: spessore_max,
             v_taglio: v_taglio,
             costo_orario: costo_orario,
             numero_di_canne: numero_di_canne,
@@ -314,12 +333,11 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".token-row .saveMaterialButton").click(async function () {
-        var tokenRow = jQuery(this).closest(".token-row");
-        var id = tokenRow.find(".id").val();
-        var spessore = tokenRow.find(".spessore").val();
-        var peso = tokenRow.find(".peso").val();
-        var prezzo = tokenRow.find(".prezzo").val();
-        var nonce = tokenRow.find(".saveNonce").val();
+        var id = jQuery(this).closest(".child-list").find(".parent_id").val();
+        var spessore = jQuery(this).closest(".token-row").find(".spessore").val();
+        var peso = jQuery(this).closest(".child-list").find(".peso").val();
+        var prezzo = jQuery(this).closest(".token-row").find(".prezzo").val();
+        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
     
         if (!id || !spessore || !peso || !prezzo) {
             alert("Please fill in all required fields.");
@@ -331,14 +349,14 @@ jQuery(document).ready(function () {
             id: id,
             spessore: spessore,
             peso_specifico: peso,
-            prezzo_kilo: prezzo,
+            prezzo_ton: prezzo,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
     
         console.log("Token Data:", tokenData);
     
-        var settings = tokenRow.find(".settings");
+        var settings = jQuery(this).closest(".token-row").find(".settings");
         settings.slideToggle(300);
         jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
@@ -450,16 +468,16 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .saveMachineArrayButton").click(async function () {
+    jQuery(".parent-settings .saveMachineArrayButton").click(async function () {
         // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
-        var name = jQuery(this).closest(".token-row").find(".name").val();
-        var spessore = jQuery(this).closest(".token-row").find(".spessore").val();
-        var numero_di_canne = jQuery(this).closest(".token-row").find(".numero_di_canne").val();
-        var nonce = jQuery(this).closest(".token-row").find(".saveNonce").val();
+        var id = jQuery(this).closest(".parent-settings").find(".parent_id").val();
+        var name = jQuery(this).closest(".parent-settings").find(".name").val();
+        var spessore_max = jQuery(this).closest(".parent-settings").find(".spessore_max").val();
+        var numero_di_canne = jQuery(this).closest(".parent-settings").find(".numero_di_canne").val();
+        var nonce = jQuery(this).closest(".parent-settings").find(".saveNonce").val();
 
         // Check if all required fields are filled
-        if (!id || !name || !spessore || !numero_di_canne) {
+        if (!id || !name || !spessore_max || !numero_di_canne) {
             alert("Please fill in all required fields.");
             return;
         }
@@ -469,7 +487,7 @@ jQuery(document).ready(function () {
             action: 'save_array_macchine',
             id: id,
             name: name,
-            spessore: spessore,
+            spessore_max: spessore_max,
             numero_di_canne: numero_di_canne,
             security: nonce
         };
@@ -479,8 +497,6 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        var settings = jQuery(this).closest(".token-row").find(".settings");
-        settings.slideToggle(300)
         jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -500,11 +516,10 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .saveMaterialArrayButton").click(async function () {
-        var tokenRow = jQuery(this).closest(".token-row");
-        var id = tokenRow.find(".id").val();
-        var peso = tokenRow.find(".peso").val();
-        var nonce = tokenRow.find(".saveNonce").val();
+    jQuery(".parent-settings .saveMaterialArrayButton").click(async function () {
+        var id = jQuery(this).closest(".parent-settings").find(".parent_id").val();
+        var peso = jQuery(this).closest(".parent-settings").find(".peso").val();
+        var nonce = jQuery(this).closest(".parent-settings").find(".saveNonce").val();
     
         if (!id || !peso ) {
             alert("Please fill in all required fields.");
@@ -520,9 +535,7 @@ jQuery(document).ready(function () {
         const ajaxurl = '/wp-admin/admin-ajax.php';
     
         console.log("Token Data:", tokenData);
-    
-        var settings = tokenRow.find(".settings");
-        settings.slideToggle(300);
+
         jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl,
@@ -541,14 +554,16 @@ jQuery(document).ready(function () {
 
     jQuery(".token-row .deleteMachineButton").click(async function () {
         // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
+        var parent_id = jQuery(this).closest(".child-list").find(".parent_id").val();
+        var child_id = jQuery(this).closest(".token-row").find(".id").val();
         var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
 
 
         // Create an object to store the data
         var tokenData = {
             action: 'delete_macchina',
-            id: id,
+            parent_id: parent_id,
+            child_id: child_id,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -581,17 +596,16 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".token-row .deleteMaterialButton").click(async function () {
-        var tokenRow = jQuery(this).closest(".token-row");
-        var id = tokenRow.find(".id").val();
-        var spessore = tokenRow.find(".spessore").val();
-        var nonce = tokenRow.find(".deleteNonce").val();
+        var parent_id = jQuery(this).closest(".child-list").find(".parent_id").val();
+        var child_id = jQuery(this).closest(".token-row").find(".spessore").val();
+        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
 
 
         // Create an object to store the data
         var tokenData = {
             action: 'delete_materiale',
-            id: id,
-            spessore: spessore,
+            parent_id: parent_id,
+            child_id: child_id,
             security: nonce
         };
         const ajaxurl = '/wp-admin/admin-ajax.php';
@@ -623,10 +637,10 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .deleteMachineArrayButton").click(async function () {
+    jQuery(".parent-settings .deleteMachineArrayButton").click(async function () {
         // Get values from input fields
-        var id = jQuery(this).closest(".token-row").find(".id").val();
-        var nonce = jQuery(this).closest(".token-row").find(".deleteNonce").val();
+        var id = jQuery(this).closest(".parent-settings").find(".parent_id").val();
+        var nonce = jQuery(this).closest(".parent-settings").find(".deleteNonce").val();
 
 
         // Create an object to store the data
@@ -641,10 +655,6 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        var settings = jQuery(this).closest(".token-row").find(".settings");
-        settings.slideToggle(300);
-        var row = jQuery(this).closest(".token-row").find(".li-field-label");
-        row.toggleClass('active');
         jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint
@@ -664,11 +674,9 @@ jQuery(document).ready(function () {
 
     });
 
-    jQuery(".token-row .deleteMaterialArrayButton").click(async function () {
-        var tokenRow = jQuery(this).closest(".token-row");
-        var id = tokenRow.find(".id").val();
-        var spessore = tokenRow.find(".spessore").val();
-        var nonce = tokenRow.find(".deleteNonce").val();
+    jQuery(".parent-settings .deleteMaterialArrayButton").click(async function () {
+        var id = jQuery(this).closest(".parent-settings").find(".parent_id").val();
+        var nonce = jQuery(this).closest(".parent-settings").find(".deleteNonce").val();
 
 
         // Create an object to store the data
@@ -684,10 +692,6 @@ jQuery(document).ready(function () {
         console.log("Token Data:", tokenData);
 
         // Clear the input fields and hide the second dropdown
-        var settings = jQuery(this).closest(".token-row").find(".settings");
-        settings.slideToggle(300);
-        var row = jQuery(this).closest(".token-row").find(".li-field-label");
-        row.toggleClass('active');
         jQuery("#overlay").fadeIn(300);
         await jQuery.ajax({
             url: ajaxurl, // WordPress AJAX endpoint

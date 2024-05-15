@@ -26,17 +26,14 @@ jQuery(document).ready(function () {
         jQuery('#formaInput').hide();
         const formaSelezionata = jQuery(this).val();
         switch(formaSelezionata) {
-            case 'quadrato':
-                jQuery('#dimensioniQuadrato').show();
-                break;
             case 'rettangolo':
                 jQuery('#dimensioniRettangolo').show();
                 break;
             case 'cerchio':
                 jQuery('#dimensioniCerchio').show();
                 break;
-            case 'crescente':
-                jQuery('#dimensioniCrescente').show();
+            case 'anello':
+                jQuery('#dimensioniAnello').show();
                 break;
         }
     });
@@ -51,89 +48,6 @@ jQuery(document).ready(function () {
 
         // Reset the spessore value
         spessoreDropdown.val('');
-    });
-
-    jQuery("#generaPreventivo").click(async function () {
-        var forma = jQuery("#forma").val() || jQuery("#formaSvg").val();
-        var svgPoints = [];
-        // Get values from input fields
-        let p_reale;
-        var materiale = jQuery("#materiale").val();
-        var spessore = jQuery("#spessore").val();
-        let dimX, dimY, superfice, perimetro;
-        var quantita = jQuery("#quantità").val();
-        var lavorazioniSelected = {};
-        
-        // var newPercentuale = jQuery("#newPercentuale").val();
-        var nonce = jQuery("#_wpnonce").val();
-
-        if (jQuery('#uploadSVG')[0].files.length > 0) {
-            const file = jQuery('#uploadSVG')[0].files[0];
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(e.target.result, "image/svg+xml");
-                const polygon = svgDoc.querySelector('polygon');
-                if (polygon) {
-                    svgPoints = polygon.getAttribute('points').trim().split(' ').map(pair => pair.split(',').map(Number));
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        var lavorazioniSelected = {};
-        jQuery('#lavorazioni-options input[type="checkbox"]').each(function() {
-            lavorazioniSelected[this.name] = this.checked;
-        });
-
-        
-        // Assuming spessore is defined elsewhere
-        p_reale = superfice * spessore;        
-
-
-        // Check if all required fields are filled
-        if (!forma || !materiale || !spessore || !quantita ) {
-            alert("Please fill in all required fields.");
-            return;
-        }
-        // Create an object to store the data
-        var tokenData = {
-            action: 'genera_preventivo',
-            materiale: materiale,
-            spessore: spessore,
-            dim_x: dimX,
-            dim_y: dimY,
-            quantita: quantita,
-            superfice: superfice,
-            perimetro: perimetro,
-            p_reale: p_reale,
-            nested: false,
-            lavorazioni: lavorazioniSelected,
-            forma: forma,
-            security: nonce
-        };
-        const ajaxurl = '/wp-admin/admin-ajax.php';
-
-        // Save the data (you can customize this part to send the data to your server or store it in your desired format)
-        console.log("Token Data:", tokenData);
-        jQuery("#overlay").fadeIn(300);
-        //Clear the input fields and hide the second dropdown
-        await jQuery.ajax({
-            url: ajaxurl, // WordPress AJAX endpoint
-            type: 'POST',
-            data: tokenData,
-            success: function(response) {
-                console.log(response);
-                jQuery("#overlay").fadeOut(300);
-                var pdfUrl = window.location.origin + '/' + response.data.pathto;
-                // Open the PDF in a new tab
-                window.open(pdfUrl, '_blank');
-            },
-            error: function(error) {
-                // Handle the error here
-                console.error(error);
-            }
-        });
     });
 
     jQuery("#generaPreventivo").click(async function () {
@@ -179,7 +93,7 @@ jQuery(document).ready(function () {
             },
             success: function (response) {
                 if (response.success) {
-                    processFormSubmission(forma, response.machine, materiale, spessore, quantita, svgPoints);
+                    processFormSubmission(forma, response.data.machine, materiale, spessore, quantita, svgPoints);
                 } else {
                     alert('No suitable machine found. Please adjust your selections.');
                 }
@@ -197,16 +111,16 @@ jQuery(document).ready(function () {
         var nonce = jQuery("#_wpnonce").val();
         // Existing code for handling shapes and other calculations
 
-        var machineId = machine.id;
-        var parentId = machine.parent_id;
-        var commonData = machine.common_data;
-        var childData = machine.child_data;
-		var machine_offset = childData.offset;
-        var machine_name               = commonData.name;
-		var machine_v_taglio           = childData.v_taglio;
-		var machine_costo_orario       = childData.costo_orario;
-        var machine_innesco       = childData.innesco;
-		var machine_numero_canne               = commonData.numero_canne;
+        var machineId            = machine.id;
+        var parentId             = machine.parent_id;
+        var commonData           = machine.common_data;
+        var childData            = machine.child_data;
+		var machine_offset       = childData.offset;
+        var machine_name         = commonData.name;
+		var machine_v_taglio     = childData.v_taglio;
+		var machine_costo_orario = childData.costo_orario;
+        var machine_innesco      = childData.innesco;
+		var machine_numero_canne = commonData.numero_di_canne;
     
         switch(forma) {
             case 'rettangolo':
@@ -225,21 +139,60 @@ jQuery(document).ready(function () {
                 superfice = Math.PI * raggio * raggio; // Area of a circle = π * radius^2
                 break;
             case 'anello':
-                const raggioExt = parseFloat(jQuery("#dimensioniAnello #raggio").val());
-                const raggioInt = parseFloat(jQuery("#dimensioniAnello #raggio").val());
+                const raggioExt = parseFloat(jQuery("#dimensioniAnello #raggioExt").val());
+                const raggioInt = parseFloat(jQuery("#dimensioniAnello #raggioInt").val());
                 dimX = 2 * raggioExt;
                 dimY = 2 * raggioExt;
-                perimetro = raggioExt * Math.PI * 2 + raggioInt * Math.PI * 2;
-                superfice = Math.PI * raggioExt * raggioExt - (Math.PI * raggioInt * raggioInt); // Area of a circle = π * radius^2
+                perimetro = (raggioExt * Math.PI * 2) + (raggioInt * Math.PI * 2);
+                superfice = (Math.PI * raggioExt * raggioExt) - (Math.PI * raggioInt * raggioInt); // Area of a circle = π * radius^2
                 break;
             default:
                 if (svgPoints.length !== 0){
-                    let newPolygon, transformedPolygon, area, width, height, perimeter, areaUsage, symPoints, symType = findOptimalConfigurations(svgPoints,quantita,machine_offset);
+                    let results, result,newPolygon,transformedPolygon,area,width,height,perimeter,areaUsage;
+                    if(quantita % 2 === 0){
+                        results = findOptimalConfigurations(svgPoints,quantita,machine_offset);
+                        result = results[0];
+                        quantita = quantita / 2;
+                        newPolygon = result[0];
+                        transformedPolygon = result[1];
+                        area = result[2];
+                        width = result[3];
+                        height = result[4];
+                        perimeter = result[5];
+                        areaUsage = result[6];
+                        perimeter = perimeter * 2;
+                        area = area * 2;
+                    } else if(quantita == 1){
+                        results = findOptimalConfigurations(svgPoints,quantita,machine_offset);
+                        result = results[0];
+                        newPolygon = result[0];
+                        transformedPolygon = result[1];
+                        area = result[2];
+                        width = result[3];
+                        height = result[4];
+                        perimeter = result[5];
+                        areaUsage = result[6];
+                    }else {
+                        results = findOptimalConfigurations(svgPoints,quantita,machine_offset);
+                        result = results[0];
+                        quantita = quantita + 1;
+                        quantita = quantita / 2;
+                        newPolygon = result[0];
+                        transformedPolygon = result[1];
+                        area = result[2];
+                        width = result[3];
+                        height = result[4];
+                        perimeter = result[5];
+                        areaUsage = result[6];
+                        perimeter = perimeter * 2;
+                    }
+                    
+                    
+                    
                     dimX = width;
                     dimY = height;
                     superfice = area;
                     perimetro = perimeter;
-                    nested = true;
                 } else {
                     console.log('Forma non riconosciuta');
                     superfice = 0;
@@ -276,7 +229,7 @@ jQuery(document).ready(function () {
             nested: nested,
             machine_id: machineId,
             machine_parent_id: parentId,
-            machine_offset: offset,
+            machine_offset: machine_offset,
             machine_name: machine_name,
             machine_v_taglio: machine_v_taglio,
             machine_costo_orario: machine_costo_orario, 
@@ -285,7 +238,7 @@ jQuery(document).ready(function () {
             lavorazioni: lavorazioniSelected,
             security: nonce
         };
-    
+        console.log(tokenData)
         // Continue with AJAX request to process the full data
         jQuery.ajax({
             url: '/wp-admin/admin-ajax.php',
@@ -610,10 +563,13 @@ function processPolygon(vertices, numberOfPolygons, maxHeight = 9999) {
     const minArea = Math.min(...rotations.filter(([_, __, ___, totalHeight]) => totalHeight <= maxHeight).map(([area]) => area));
     
     // Filter results for optimal rotations
-    const optimalRotations = rotations.filter(([area, angle, polygon, totalHeight]) => area === minArea && totalHeight <= maxHeight).map(([_, angle, polygon]) => [angle, polygon]);
+    let optimalRotations = rotations.filter(([area, angle, polygon, totalHeight]) => area === minArea && totalHeight <= maxHeight).map(([_, angle, polygon]) => [angle, polygon]);
 
+    if (sides.length === 3 && numberOfPolygons > 1) {
+        optimalRotations = rotations.filter(([_, __, ___, totalHeight]) => totalHeight <= maxHeight).map(([_, angle, polygon]) => [angle, polygon]);
+    }
     // If no valid rotation meets the area criteria within the height constraint, include the first valid rotation
-    if (optimalRotations.length === 0 && firstValidRotation) {
+    if (!optimalRotations.length && firstValidRotation) {
         optimalRotations.push(firstValidRotation);
     }
 
@@ -621,12 +577,23 @@ function processPolygon(vertices, numberOfPolygons, maxHeight = 9999) {
 }
 
 function findOptimalConfigurations(vertices, numberOfPolygons, distance) {
-    if (numberOfPolygons <= 1) {
+
+    if (numberOfPolygons < 1) {
         return [];
     }
+    
+    const originalConfigurations = processPolygon(vertices, numberOfPolygons);
+    let optimalConfigurations = [];
+    if (numberOfPolygons === 1) {
+        for (const [angle, polygon] of originalConfigurations) {
+            const [area, width, height] = boundingBoxArea(polygon);
+            const areaUsage = polygonArea(polygon) / area;
+            const perimeter = polygonPerimeter(polygon);
+            optimalConfigurations.push([polygon, null, polygonArea(polygon), width, height, perimeter, areaUsage]);
+        }
+        return optimalConfigurations;
+    }
 
-    const originalConfigurations = processPolygon(vertices, 1);
-    let optimalConfiguration = [];
     let minArea = Infinity;
 
     for (const [angle, polygon] of originalConfigurations) {
@@ -648,10 +615,10 @@ function findOptimalConfigurations(vertices, numberOfPolygons, distance) {
                         const combinedPolygon = newPolygon.concat(transformedPolygon);
                         const [area, width, height] = boundingBoxArea(combinedPolygon);
                         const areaUsage = (polygonArea(newPolygon) + polygonArea(transformedPolygon)) / area;
-                        const perimeter = 2 * polygonPerimeter(newPolygon);
+                        const perimeter = polygonPerimeter(polygon);
                         if (area < minArea) {
                             minArea = area;
-                            optimalConfiguration = [newPolygon, transformedPolygon, area, width, height, perimeter, areaUsage, symPoints, symType];
+                            optimalConfigurations = [[newPolygon, transformedPolygon, polygonArea(newPolygon), width, height, perimeter, areaUsage]];
                         }
                     }
                 }
@@ -659,5 +626,6 @@ function findOptimalConfigurations(vertices, numberOfPolygons, distance) {
         }
     }
 
-    return optimalConfiguration;
+    return optimalConfigurations;
 }
+

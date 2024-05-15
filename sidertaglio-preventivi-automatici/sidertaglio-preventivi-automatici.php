@@ -342,14 +342,14 @@ function form_preventivi_shortcode() {
 			<li class="firstDropDown">
 				<?php $nonce = wp_create_nonce( 'genera_preventivo' ); ?>
 				<input type="hidden" id="_wpnonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-				<?php $nonce2 = wp_create_nonce( 'genera_preventivo' ); ?>
+				<?php $nonce2 = wp_create_nonce( 'retrieve_machine_parameters' ); ?>
 				<input type="hidden" id="_wpnonce_machines" name="_wpnonce_machines" value="<?php echo esc_attr( $nonce2 ); ?>" />
 				<div class="shapeWrapper">
 				<div class="selectForma">
 					<label for="forma">Scegli una forma tra le seguenti:</label>
 					<select name="forma" id="forma">
 					<option value="">Seleziona una forma...</option>
-					<option value="quadrato">Piastra</option>
+					<option value="rettangolo">Piastra</option>
 					<option value="cerchio">Disco</option>
 					<option value="anello">Anello</option>
 					</select>
@@ -471,17 +471,17 @@ function sidertaglio_settings_form() {
 	wp_enqueue_style( 'spa_custom_admin_css', SPA_URL . 'assets/css/sidertaglio-preventivi-automatici-admin.css', array(), SPA_VERSION, null, 'all' );
 	wp_enqueue_script( 'spa_custom_admin_js', SPA_URL . 'assets/js/sidertaglio-preventivi-automatici-admin.js', array( 'jquery' ), SPA_VERSION, true );
 	?>
-    <div class="wrap">
-        <h1>Sidertaglio Preventivi Automatici Settings</h1>
-        <form action="options.php" method="post">
-            <?php
-            settings_fields('sidertaglio_preventivi_automatici_options_group'); // Output nonce, action, and option_page fields
-            do_settings_sections('sidertaglio_preventivi_automatici_settings'); // Prints out all settings sections added to this page
-            submit_button();
-            ?>
-        </form>
-    </div>
-    <?php
+		<div class="wrap">
+			<h1>Sidertaglio Preventivi Automatici Settings</h1>
+			<form action="options.php" method="post">
+			<?php
+			settings_fields( 'sidertaglio_preventivi_automatici_options_group' );
+			do_settings_sections( 'sidertaglio_preventivi_automatici_settings' );
+			submit_button();
+			?>
+			</form>
+		</div>
+	<?php
 	$macchine = get_all_macchine();
 	?>
 		
@@ -588,50 +588,56 @@ function sidertaglio_settings_form() {
 										<span><?php echo esc_html( $parent_id ); ?></span>
 									</strong>
 								</li>
-								<li class="new-child-button">
+								<!-- <li class="new-child-button">
 									<div class="icon-plus-button">&plus;</div>
-								</li>
-							</ul>
-						</div>
-						<div class="parent-settings">
-							<ul class="dropdownMenu">
-								<li>
-									<label for="<?php echo esc_attr( $id . '_name' ); ?>">Nome della macchina:</label>
-									<input type="text" class="name" value="<?php echo esc_attr( $name ); ?>" id="<?php echo esc_attr( $id . '_name' ); ?>"/>
-									<br/>
-
-									<label for="<?php echo esc_attr( $id . '_spessore_max' ); ?>">Spessore massimo tagliabile in millimetri:</label>
-									<input type="number" class="spessore_max" value="<?php echo esc_attr( $spessore_max ); ?>" id="<?php echo esc_attr( $id . '_spessore_max' ); ?>"/>
-						
-									<br/>
-
-									<label for="<?php echo esc_attr( $id . '_numero_di_canne' ); ?>">Numero di canne disponibili:</label>
-									<input type="number" class="numero_di_canne" value="<?php echo esc_attr( $numero_di_canne ); ?>" id="<?php echo esc_attr( $id . '_numero_di_canne' ); ?>"/>
-						
-									<br/>
-								</li>
-								<li class="saveButtonLi">
-									<?php $nonce = wp_create_nonce( 'save_array_macchine' ); ?>
-									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-left">
-										<input class='saveMachineArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
-									</p>
-									<?php $nonce = wp_create_nonce( 'delete_array_macchine' ); ?>
-									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-right">
-										<input class='deleteMachineArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
-									</p>
-								</li>
+								</li> -->
 							</ul>
 						</div>
 						<div class="child-list">
+							<div class="parent-settings">
+								<ul class="dropdownMenu">
+									<li>
+										<label for="<?php echo esc_attr( $parent_id . '_id' ); ?>">ID della macchina:</label>
+										<input type="text" class="parent_id" readonly value="<?php echo esc_attr( $parent_id ); ?>" id="<?php echo esc_attr( $parent_id . '_id' ); ?>"/>
+					
+										<br/>
+
+										<label for="<?php echo esc_attr( $parent_id . '_name' ); ?>">Nome della macchina:</label>
+										<input type="text" class="name" value="<?php echo esc_attr( $name ); ?>" id="<?php echo esc_attr( $id . '_name' ); ?>"/>
+										
+										<br/>
+
+										<label for="<?php echo esc_attr( $parent_id . '_spessore_max' ); ?>">Spessore massimo tagliabile in millimetri:</label>
+										<input type="number" class="spessore_max" value="<?php echo esc_attr( $spessore_max ); ?>" id="<?php echo esc_attr( $parent_id . '_spessore_max' ); ?>"/>
+							
+										<br/>
+
+										<label for="<?php echo esc_attr( $parent_id . '_numero_di_canne' ); ?>">Numero di canne disponibili:</label>
+										<input type="number" class="numero_di_canne" value="<?php echo esc_attr( $numero_di_canne ); ?>" id="<?php echo esc_attr( $parent_id . '_numero_di_canne' ); ?>"/>
+							
+										<br/>
+									</li>
+									<li class="saveButtonLi">
+										<?php $nonce = wp_create_nonce( 'save_array_macchine' ); ?>
+										<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+										<p class="button-left">
+											<input class='saveMachineArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $parent_id . '_save' ); ?>">
+										</p>
+										<?php $nonce = wp_create_nonce( 'delete_array_macchine' ); ?>
+										<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+										<p class="button-right">
+											<input class='deleteMachineArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $parent_id . '_delete' ); ?>">
+										</p>
+									</li>
+								</ul>
+							</div>
 							<?php
 							foreach ( $children as $child_id => $child_data ) {
-								$offset             = $child_data['offset'];
-								$spessore           = $child_data['spessore'];
-								$v_taglio           = $child_data['v_taglio'];
-								$costo_orario       = $child_data['costo_orario'];
-								$innesco            = $child_data['innesco'];
+								$offset       = $child_data['offset'];
+								$spessore     = $child_data['spessore'];
+								$v_taglio     = $child_data['v_taglio'];
+								$costo_orario = $child_data['costo_orario'];
+								$innesco      = $child_data['innesco'];
 								?>
 								<div class="token-row">
 									<div class="handle" id="<?php echo esc_attr( $child_id ); ?>">
@@ -648,7 +654,7 @@ function sidertaglio_settings_form() {
 										<ul class="dropdownMenu">
 											<li>
 												<label for="<?php echo esc_attr( $child_id . '_id' ); ?>">ID della macchina:</label>
-												<input type="text" class="id" readonly value="<?php echo esc_attr( $parent_id ); ?>" id="<?php echo esc_attr( $child_id . '_id' ); ?>"/>
+												<input type="text" class="id" readonly value="<?php echo esc_attr( $child_id ); ?>" id="<?php echo esc_attr( $child_id . '_id' ); ?>"/>
 									
 												<br/>
 
@@ -802,35 +808,38 @@ function sidertaglio_settings_form() {
 										<span><?php echo esc_html( $parent_id ); ?></span>
 									</strong>
 								</li>
-								<li class="new-child-button">
+								<!-- <li class="new-child-button">
 									<div class="icon-plus-button">&plus;</div>
-								</li>
+								</li> -->
 							</ul>
 						</div>
-						<div class="parent-settings">
-							<ul class="dropdownMenu">
-								<li>
-									<label for="<?php echo esc_attr( $child_id . '_peso' ); ?>">Peso specifico in kg/m<sup>3</sup>:</label>
-									<input type="number" class="peso" value="<?php echo esc_attr( $peso ); ?>" id="<?php echo esc_attr( $child_id . '_peso' ); ?>"/>
-									</br>
-								</li>
-								<li class="saveButtonLi">
-									<?php $nonce = wp_create_nonce( 'save_array_materiali' ); ?>
-									<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-left">
-										<input class='saveMaterialArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $child_id . '_save' ); ?>">
-									</p>
-									<?php $nonce = wp_create_nonce( 'delete_array_materiali' ); ?>
-									<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
-									<p class="button-right">
-										<input class='deleteMaterialArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $child_id . '_delete' ); ?>">
-									</p>
-								</li>
-							</ul>
-						</div>
-
 
 						<div class="child-list">
+							<div class="parent-settings">
+								<ul class="dropdownMenu">
+									<li>
+										<label for="<?php echo esc_attr( $parent_id . '_parent_id' ); ?>">Materiale:</label>
+										<input readonly type="text" class="parent_id" value="<?php echo esc_attr( $parent_id ); ?>" id="<?php echo esc_attr( $parent_id . '_parent_id' ); ?>"/>
+										</br>
+
+										<label for="<?php echo esc_attr( $parent_id . '_peso' ); ?>">Peso specifico in kg/m<sup>3</sup>:</label>
+										<input type="number" class="peso" value="<?php echo esc_attr( $peso ); ?>" id="<?php echo esc_attr( $parent_id . '_peso' ); ?>"/>
+										</br>
+									</li>
+									<li class="saveButtonLi">
+										<?php $nonce = wp_create_nonce( 'save_array_materiali' ); ?>
+										<input type="hidden" class="saveNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+										<p class="button-left">
+											<input class='saveMaterialArrayButton saveButton' value="Salva" type="button" id="<?php echo esc_attr( $parent_id . '_save' ); ?>">
+										</p>
+										<?php $nonce = wp_create_nonce( 'delete_array_materiali' ); ?>
+										<input type="hidden" class="deleteNonce" name="_wpnonce" value="<?php echo esc_attr( $nonce ); ?>" />
+										<p class="button-right">
+											<input class='deleteMaterialArrayButton deleteButton' value="Elimina" type="button" id="<?php echo esc_attr( $parent_id . '_delete' ); ?>">
+										</p>
+									</li>
+								</ul>
+							</div>
 							<?php
 							foreach ( $children as $child_id => $child_data ) {
 								$prezzo   = $child_data['prezzo_ton'];
@@ -850,8 +859,8 @@ function sidertaglio_settings_form() {
 									<div class="settings">
 										<ul class="dropdownMenu">
 											<li>
-												<label for="<?php echo esc_attr( $child_id . '_id' ); ?>">Materiale:</label>
-												<input readonly type="text" class="id" value="<?php echo esc_attr( $parent_id ); ?>" id="<?php echo esc_attr( $child_id . '_id' ); ?>"/>
+												<label for="<?php echo esc_attr( $child_id . '_id' ); ?>">ID Materiale:</label>
+												<input readonly type="text" class="id" value="<?php echo esc_attr( $child_id ); ?>" id="<?php echo esc_attr( $child_id . '_id' ); ?>"/>
 												</br>
 
 												<label for="<?php echo esc_attr( $child_id . '_spessore' ); ?>">Spessore:</label>
@@ -915,11 +924,6 @@ function sidertaglio_settings_form() {
 
 				<label for="newPrezzo">Prezzo alla tonnellata:</label>
 				<input type="number" placeholder="e.g.: 20" id="newPrezzo"/>
-				
-				<br/>
-
-				<label for="newRicarico">Ricarico percentuale sul prezzo:</label>
-				<input type="number" placeholder="e.g.: 20" id="newRicarico"/>
 				
 				<br/>
 				
@@ -1282,13 +1286,13 @@ add_action( 'wp_ajax_nopriv_get_all_lavorazioni', 'get_all_lavorazioni' );
  */
 function delete_macchina() {
 	check_ajax_referer( 'delete_macchina', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
-		$array_id      = 'sidertaglio_macchina_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		$machine_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+	if ( isset( $_POST['parent_id'] ) && isset( $_POST['child_id'] ) ) {
+		$array_id      = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['parent_id'] ) ) );
+		$machine_id    = strtoupper( sanitize_text_field( wp_unslash( $_POST['child_id'] ) ) );
 		$machines_info = get_option( $array_id, array() );
 		if ( isset( $machines_info['machines'][ $machine_id ] ) ) {
 			unset( $machines_info['machines'][ $machine_id ] );
-			if ( empty( $machines_info ) ) {
+			if ( empty( $machines_info['machines'] ) ) {
 				delete_option( $array_id );
 			} else {
 				update_option( $array_id, $machines_info );
@@ -1328,16 +1332,16 @@ add_action( 'wp_ajax_nopriv_delete_array_macchine', 'delete_array_macchine' );
  */
 function delete_materiale() {
 	check_ajax_referer( 'delete_materiale', 'security' );
-	if ( isset( $_POST['id'] ) && isset( $_POST['spessore'] ) ) {
-		$array_id    = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		$material_id = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
-		$materials   = get_option( $array_id, array() );
-		if ( isset( $materials[ $material_id ] ) ) {
-			unset( $materials[ $material_id ] );
-			if ( empty( $materials ) ) {
+	if ( isset( $_POST['parent_id'] ) && isset( $_POST['child_id'] ) ) {
+		$array_id       = 'sidertaglio_materiale_' . strtolower( sanitize_text_field( wp_unslash( $_POST['parent_id'] ) ) );
+		$material_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['child_id'] ) ) );
+		$materials_info = get_option( $array_id, array() );
+		if ( isset( $materials_info['materials'][ $material_id ] ) ) {
+			unset( $materials_info['materials'][ $material_id ] );
+			if ( empty( $materials_info['materials'] ) ) {
 				delete_option( $array_id );
 			} else {
-				update_option( $array_id, $materials );
+				update_option( $array_id, $materials_info );
 			}
 		}
 	}
@@ -1441,7 +1445,7 @@ function save_macchina() {
 	check_ajax_referer( 'save_macchina', 'security' );
 	if ( isset( $_POST['id'] ) && isset( $_POST['name'] ) && isset( $_POST['offset'] ) && isset( $_POST['spessore'] ) && isset( $_POST['spessore_max'] ) && isset( $_POST['v_taglio'] ) && isset( $_POST['costo_orario'] ) && isset( $_POST['numero_di_canne'] ) && isset( $_POST['innesco'] ) ) {
 		$array_id      = 'sidertaglio_macchina_' . strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) );
-		$machine_id    = strtolower( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$machine_id    = strtoupper( sanitize_text_field( wp_unslash( $_POST['id'] ) ) ) . sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 		$machines_info = get_option( $array_id );
 		if ( false === $machines_info ) {
 			$machines_info = array(
@@ -1455,11 +1459,11 @@ function save_macchina() {
 			'numero_di_canne' => sanitize_text_field( wp_unslash( $_POST['numero_di_canne'] ) ),
 		);
 		$machines_info['machines'][ $machine_id ] = array(
-			'offset'             => sanitize_text_field( wp_unslash( $_POST['offset'] ) ),
-			'spessore'           => sanitize_text_field( wp_unslash( $_POST['spessore'] ) ),
-			'v_taglio'           => sanitize_text_field( wp_unslash( $_POST['v_taglio'] ) ),
-			'costo_orario'       => sanitize_text_field( wp_unslash( $_POST['costo_orario'] ) ),
-			'innesco'            => sanitize_text_field( wp_unslash( $_POST['innesco'] ) ),
+			'offset'       => sanitize_text_field( wp_unslash( $_POST['offset'] ) ),
+			'spessore'     => sanitize_text_field( wp_unslash( $_POST['spessore'] ) ),
+			'v_taglio'     => sanitize_text_field( wp_unslash( $_POST['v_taglio'] ) ),
+			'costo_orario' => sanitize_text_field( wp_unslash( $_POST['costo_orario'] ) ),
+			'innesco'      => sanitize_text_field( wp_unslash( $_POST['innesco'] ) ),
 		);
 
 		update_option( $array_id, $machines_info );
@@ -1489,7 +1493,7 @@ function save_array_materiale() {
 			);
 		}
 		$materials_info['common'] = array(
-			'peso_specifico'     => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
+			'peso_specifico' => sanitize_text_field( wp_unslash( $_POST['peso_specifico'] ) ),
 		);
 		update_option( $array_id, $materials_info );
 	}
@@ -1578,47 +1582,52 @@ function save_lavorazione() {
 add_action( 'wp_ajax_save_lavorazione', 'save_lavorazione' );
 add_action( 'wp_ajax_nopriv_save_lavorazione', 'save_lavorazione' );
 
+/**
+ * Retrieves the parameter of the best fitting machine.
+ *
+ * @since 1.0.0
+ * @return void
+ */
 function retrieve_machine_parameters() {
-    check_ajax_referer('retrieve_machine_parameters', 'security');
+	check_ajax_referer( 'retrieve_machine_parameters', 'security' );
 	if ( isset( $_POST['materiale'] ) && isset( $_POST['spessore'] ) ) {
 
 		$materiale = strtoupper( sanitize_text_field( wp_unslash( $_POST['materiale'] ) ) );
-		$spessore = sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
+		$spessore  = sanitize_text_field( wp_unslash( $_POST['spessore'] ) );
 
-		// Assume get_all_macchine() retrieves all machine data
-		$machines = get_all_macchine();
+		$machines         = get_all_macchine();
 		$suitable_machine = null;
 
 		foreach ( $machines as $machine ) {
 			$children  = $machine['children'];
 			$parent_id = $materiale['parent_id'];
-			if ($machine['common_data']['spessore_max'] >= $spessore) {
+			if ( $machine['common_data']['spessore_max'] >= $spessore ) {
 				foreach ( $children as $child_id => $child_data ) {
-					$offset             = $child_data['offset'];
-					$spessore           = $child_data['spessore'];
-					$v_taglio           = $child_data['v_taglio'];
-					$costo_orario       = $child_data['costo_orario'];
+					$offset       = $child_data['offset'];
+					$spessore     = $child_data['spessore'];
+					$v_taglio     = $child_data['v_taglio'];
+					$costo_orario = $child_data['costo_orario'];
 					if ( is_null( $suitable_machine ) || ( $suitable_machine['child_data']['spessore'] > $spessore_child && $spessore_child >= $spessore ) ) {
-						$suitable_machine = [
-                            'id' => $child_id,
-                            'parent_id' => $machine['parent_id'],
-                            'common_data' => $machine['common_data'],
-                            'child_data' => $child_data
-                        ];
+						$suitable_machine = array(
+							'id'          => $child_id,
+							'parent_id'   => $machine['parent_id'],
+							'common_data' => $machine['common_data'],
+							'child_data'  => $child_data,
+						);
 					}
 				}
 			}
 		}
 
-		if ($suitable_machine) {
-			wp_send_json_success(['machine' => $suitable_machine]);
+		if ( $suitable_machine ) {
+			wp_send_json_success( array( 'machine' => $suitable_machine ) );
 		} else {
-			wp_send_json_error('No suitable machine found.');
+			wp_send_json_error( 'No suitable machine found.' );
 		}
 	}
 }
-add_action('wp_ajax_retrieve_machine_parameters', 'retrieve_machine_parameters');
-add_action('wp_ajax_nopriv_retrieve_machine_parameters', 'retrieve_machine_parameters');
+add_action( 'wp_ajax_retrieve_machine_parameters', 'retrieve_machine_parameters' );
+add_action( 'wp_ajax_nopriv_retrieve_machine_parameters', 'retrieve_machine_parameters' );
 
 
 /**
@@ -1655,8 +1664,8 @@ function genera_preventivo() {
 		$k3                   = true;
 		$k4                   = false;
 
-		$machine_offset_percentuale = get_spa_setting('offset_percentuale');
-		$ricarico_materiale         = get_spa_setting('ricarico_materiale_globale');
+		$machine_offset_percentuale = get_sidertaglio_preventivi_automatici_setting( 'offset_percentuale' );
+		$ricarico_materiale         = get_sidertaglio_preventivi_automatici_setting( 'ricarico_materiale_globale' );
 
 		if ( isset( $_POST['lavorazioni'] ) && is_array( $_POST['lavorazioni'] ) ) {
 			$lavorazioni_richieste = array();
@@ -2140,34 +2149,34 @@ function sidertaglio_preventivi_automatici_settings_link( $actions ) {
  * @return void
  */
 function sidertaglio_preventivi_automatici_settings_init() {
-    register_setting('sidertaglio_preventivi_automatici_options_group', 'sidertaglio_preventivi_automatici_options', 'sidertaglio_preventivi_automatici_sanitize_options');
+	register_setting( 'sidertaglio_preventivi_automatici_options_group', 'sidertaglio_preventivi_automatici_options', 'sidertaglio_preventivi_automatici_sanitize_options' );
 
-    add_settings_section(
-        'sidertaglio_preventivi_automatici_settings_section',
-        'Global Settings',
-        'sidertaglio_preventivi_automatici_settings_section_callback',
-        'sidertaglio_preventivi_automatici_settings'
-    );
+	add_settings_section(
+		'sidertaglio_preventivi_automatici_settings_section',
+		'Global Settings',
+		'sidertaglio_preventivi_automatici_settings_section_callback',
+		'sidertaglio_preventivi_automatici_settings'
+	);
 
-    add_settings_field(
-        'offset_percentuale',
-        'Offset percentuale',
-        'sidertaglio_preventivi_automatici_offset_percentuale_callback',
-        'sidertaglio_preventivi_automatici_settings',
-        'sidertaglio_preventivi_automatici_settings_section',
-        ['label_for' => 'offset_percentuale']
-    );
+	add_settings_field(
+		'offset_percentuale',
+		'Offset percentuale',
+		'sidertaglio_preventivi_automatici_offset_percentuale_callback',
+		'sidertaglio_preventivi_automatici_settings',
+		'sidertaglio_preventivi_automatici_settings_section',
+		array( 'label_for' => 'offset_percentuale' )
+	);
 
-    add_settings_field(
-        'ricarico_materiale_globale',
-        'Ricarico materiale globale',
-        'sidertaglio_preventivi_automatici_ricarico_materiale_callback',
-        'sidertaglio_preventivi_automatici_settings',
-        'sidertaglio_preventivi_automatici_settings_section',
-        ['label_for' => 'ricarico_materiale_globale']
-    );
+	add_settings_field(
+		'ricarico_materiale_globale',
+		'Ricarico materiale globale',
+		'sidertaglio_preventivi_automatici_ricarico_materiale_callback',
+		'sidertaglio_preventivi_automatici_settings',
+		'sidertaglio_preventivi_automatici_settings_section',
+		array( 'label_for' => 'ricarico_materiale_globale' )
+	);
 }
-add_action('admin_init', 'sidertaglio_preventivi_automatici_settings_init');
+add_action( 'admin_init', 'sidertaglio_preventivi_automatici_settings_init' );
 
 /**
  * Callback to plugin's settings section
@@ -2176,74 +2185,78 @@ add_action('admin_init', 'sidertaglio_preventivi_automatici_settings_init');
  * @return void
  */
 function sidertaglio_preventivi_automatici_settings_section_callback() {
-    echo '<p>Configure the global settings for Sidertaglio Preventivi Automatici.</p>';
+	echo '<p>Configure the global settings for Sidertaglio Preventivi Automatici.</p>';
 }
 
 /**
  * Callback to plugin's settings "offset percentuale" section
  *
  * @since 1.0.0
+ * @param array $args Args.
  * @return void
  */
-function sidertaglio_preventivi_automatici_offset_percentuale_callback($args) {
-    $options = get_option('sidertaglio_preventivi_automatici_options');
-    ?>
-    <input id="<?php echo esc_attr($args['label_for']); ?>"
-           name="sidertaglio_preventivi_automatici_options[<?php echo esc_attr($args['label_for']); ?>]"
-           type="number"
-           value="<?php echo isset($options[$args['label_for']]) ? intval($options[$args['label_for']]) : ''; ?>"
-           min="0"
-           step="0.01">
-    <?php
+function sidertaglio_preventivi_automatici_offset_percentuale_callback( $args ) {
+	$options = get_option( 'sidertaglio_preventivi_automatici_options' );
+	?>
+	<input id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			name="sidertaglio_preventivi_automatici_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			type="number"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? intval( $options[ $args['label_for'] ] ) : ''; ?>"
+			min="0"
+			step="0.01">
+	<?php
 }
 
 /**
  * Callback to plugin's settings "ricarico materiale" section
  *
  * @since 1.0.0
+ * @param array $args Args.
  * @return void
  */
-function sidertaglio_preventivi_automatici_ricarico_materiale_callback($args) {
-    $options = get_option('sidertaglio_preventivi_automatici_options');
-    ?>
-    <input id="<?php echo esc_attr($args['label_for']); ?>"
-           name="sidertaglio_preventivi_automatici_options[<?php echo esc_attr($args['label_for']); ?>]"
-           type="number"
-           value="<?php echo isset($options[$args['label_for']]) ? intval($options[$args['label_for']]) : ''; ?>"
-           min="0"
-           step="0.01">
-    <?php
+function sidertaglio_preventivi_automatici_ricarico_materiale_callback( $args ) {
+	$options = get_option( 'sidertaglio_preventivi_automatici_options' );
+	?>
+	<input id="<?php echo esc_attr( $args['label_for'] ); ?>"
+			name="sidertaglio_preventivi_automatici_options[<?php echo esc_attr( $args['label_for'] ); ?>]"
+			type="number"
+			value="<?php echo isset( $options[ $args['label_for'] ] ) ? intval( $options[ $args['label_for'] ] ) : ''; ?>"
+			min="0"
+			step="0.01">
+	<?php
 }
 
 /**
  * Sanitize plugins setting's options
  *
  * @since 1.0.0
+ * @param array $options Options.
  * @return array
  */
-function sidertaglio_preventivi_automatici_sanitize_options($options) {
-    $sanitized_options = [];
+function sidertaglio_preventivi_automatici_sanitize_options( $options ) {
+	$sanitized_options = array();
 
-    if (isset($options['offset_percentuale'])) {
-        $sanitized_options['offset_percentuale'] = absint($options['offset_percentuale']);
-    }
+	if ( isset( $options['offset_percentuale'] ) ) {
+		$sanitized_options['offset_percentuale'] = absint( $options['offset_percentuale'] );
+	}
 
-    if (isset($options['ricarico_materiale_globale'])) {
-        $sanitized_options['ricarico_materiale_globale'] = absint($options['ricarico_materiale_globale']);
-    }
+	if ( isset( $options['ricarico_materiale_globale'] ) ) {
+		$sanitized_options['ricarico_materiale_globale'] = absint( $options['ricarico_materiale_globale'] );
+	}
 
-    return $sanitized_options;
+	return $sanitized_options;
 }
 
 /**
  * Retrieve plugin's settings
  *
  * @since 1.0.0
+ * @param array $setting_name Setting name.
  * @return array
  */
-function get_sidertaglio_preventivi_automatici_setting($setting_name) {
-    $options = get_option('sidertaglio_preventivi_automatici_options');
-    return isset($options[$setting_name]) ? $options[$setting_name] : null;
+function get_sidertaglio_preventivi_automatici_setting( $setting_name ) {
+	$options = get_option( 'sidertaglio_preventivi_automatici_options' );
+	return isset( $options[ $setting_name ] ) ? $options[ $setting_name ] : null;
 }
 
 
