@@ -1655,14 +1655,14 @@ function genera_preventivo() {
 		$machine_offset       = sanitize_text_field( wp_unslash( $_POST['machine_offset'] ) );
 		$machine_v_taglio     = sanitize_text_field( wp_unslash( $_POST['machine_v_taglio'] ) );
 		$machine_costo_orario = sanitize_text_field( wp_unslash( $_POST['machine_costo_orario'] ) );
-		$machine_costo_orario = sanitize_text_field( wp_unslash( $_POST['machine_innesco'] ) );
+		$machine_innesco      = sanitize_text_field( wp_unslash( $_POST['machine_innesco'] ) );
 		$numero_canne         = sanitize_text_field( wp_unslash( $_POST['machine_numero_canne'] ) );
 		$nested               = rest_sanitize_boolean( sanitize_text_field( wp_unslash( $_POST['nested'] ) ) );
 		$forma                = sanitize_text_field( wp_unslash( $_POST['forma'] ) );
-		$altri_costi          = 100;
+		$altri_costi          = 0;
 		$pezzi_grezzi         = 0;
 		$k3                   = true;
-		$k4                   = false;
+		$k4                   = true;
 
 		$machine_offset_percentuale = get_sidertaglio_preventivi_automatici_setting( 'offset_percentuale' );
 		$ricarico_materiale         = get_sidertaglio_preventivi_automatici_setting( 'ricarico_materiale_globale' );
@@ -1709,11 +1709,13 @@ function genera_preventivo() {
 		$materiale_id = 'sidertaglio_materiale_' . $materiale;
 		$materiali    = get_option( $materiale_id );
 		if ( ! empty( $materiali ) ) {
-			$materiale_children_details = $materiali['children'][ $materiale . $spessore ];
+			$materiale_children_details = $materiali['materials'][ $materiale . $spessore ];
 			$materiale_parent_details   = $materiali['common'];
 			$peso_specifico             = $materiale_parent_details['peso_specifico'];
 			$prezzo_materiale_al_kg     = $materiale_children_details['prezzo_ton'];
+			$prezzo_materiale_al_kg     = $prezzo_materiale_al_kg/1000;
 		}
+		$peso_specifico = 7.86;
 
 		/**
 		 * Retrieves lavorazioni details
@@ -1741,7 +1743,7 @@ function genera_preventivo() {
 		/**
 		 * Chooses which wheight to use in calculations
 		 */
-		if ( $p_quadrotto > 0 ) {
+		if ( $p_quadrotto < 0 ) {
 			if ( $p_reale / $p_quadrotto <= 0.30 ) {
 				$p_utilizzato = $p_reale;
 			} elseif ( $p_reale / $p_quadrotto <= 0.60 ) {
@@ -1767,6 +1769,8 @@ function genera_preventivo() {
 		 * Calculates the price of usage for the machine
 		 */
 		$tempo_di_taglio = $perimetro / $machine_v_taglio;
+		$tempo_di_taglio = $tempo_di_taglio + ($machine_innesco * 2);
+
 		if ( 0 === strcmp( $machine_name, 'OSSIT' ) ) {
 			if ( 0 === ( $quantita % $numero_canne ) ) {
 				$costo_di_taglio = ( ( $tempo_di_taglio * ( $machine_costo_orario / 60 ) ) * intdiv( $quantita, $numero_canne ) ) / $quantita;
@@ -1774,7 +1778,7 @@ function genera_preventivo() {
 				$costo_di_taglio = ( ( $tempo_di_taglio * ( $machine_costo_orario / 60 ) ) * ( intdiv( $quantita, $numero_canne ) + 1 ) ) / $quantita;
 			}
 		} else {
-			$costo_di_taglio = $tempo_di_taglio * ( $machine_costo_orario / 60 );
+			$costo_di_taglio = $tempo_di_taglio * ( $machine_costo_orario / 3600 );
 		}
 
 		/**
@@ -1811,7 +1815,7 @@ function genera_preventivo() {
 			}
 
 			if ( $k4 ) {
-				$total *= 1.02;
+				$total *= 1.025;
 			}
 		}
 
@@ -2105,6 +2109,12 @@ function genera_preventivo() {
 			'costo_lavorazioni' => $costo_lavorazioni,
 			'altri_costi'       => $altri_costi,
 			'total'             => $total,
+			'dim_x'             => $dim_x,
+			'dim_y'             => $dim_y,
+			'peso_specifico'    => $peso_specifico,
+			'prezzo_materiale_al_kg' => $prezzo_materiale_al_kg,
+			'prezzo_rottame_al_kg' => $prezzo_rottame_al_kg,
+			'ricarico_materiale' => $ricarico_materiale,
 			'pathto'            => $pathto,
 		);
 		wp_send_json_success( $response_data );

@@ -610,7 +610,7 @@ function findOptimalConfigurations(vertices, numberOfPolygons, distance) {
 
             for (const [symPolygon, symPoints, symType] of symmetricPolygons) {
                 if (symPolygon.every(([x, y]) => x >= 0 && y >= 0)) {
-                    const [newPolygon, transformedPolygon] = allTranslatedPolygons([polygon, symPolygon], 2);
+                    const [newPolygon, transformedPolygon] = allTranslatedPolygons([polygon, symPolygon], distance);
                     if (transformedPolygon && newPolygon) {
                         const combinedPolygon = newPolygon.concat(transformedPolygon);
                         const [area, width, height] = boundingBoxArea(combinedPolygon);
