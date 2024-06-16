@@ -1666,7 +1666,9 @@ function genera_preventivo() {
 
 		$machine_offset_percentuale = get_sidertaglio_preventivi_automatici_setting( 'offset_percentuale' );
 		$ricarico_materiale         = get_sidertaglio_preventivi_automatici_setting( 'ricarico_materiale_globale' );
-
+		/**
+		 * Creates array of lrequired avorazioni given user input
+		 */
 		if ( isset( $_POST['lavorazioni'] ) && is_array( $_POST['lavorazioni'] ) ) {
 			$lavorazioni_richieste = array();
 			foreach ( $_POST['lavorazioni'] as $key => $value ) {
